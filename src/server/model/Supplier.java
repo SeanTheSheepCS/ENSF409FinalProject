@@ -1,3 +1,4 @@
+package server.model;
 
 /**
  * The supplier for an item in the tool shop application

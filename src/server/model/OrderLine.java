@@ -1,3 +1,4 @@
+package server.model;
 /**
  * An orderline for orders in the tool shop application
  * 
