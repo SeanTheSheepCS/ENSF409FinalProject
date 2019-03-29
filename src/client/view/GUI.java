@@ -1,6 +1,11 @@
 package client.view;
 
-public class GUI 
-{
+import javax.swing.JFrame;
 
+public class GUI extends JFrame
+{
+    public GUI(String title)
+    {
+        super(title);
+    }
 }
