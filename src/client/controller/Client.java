@@ -31,11 +31,14 @@ public class Client
     private GUI theFrame;
     private PermissionController pControl;
     
-    public Client(String serverName, int portNumber)
+    public Client(String serverName, int portNumber, boolean shouldConnect)
     {
         try
         {
-            setUpConnection(serverName, portNumber);
+            if(shouldConnect)
+            {
+                setUpConnection(serverName, portNumber);
+            }
             theFrame = new GUI("Toolshop application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
@@ -136,6 +139,6 @@ public class Client
     
     public static void main(String[] args)
     {
-        Client user = new Client("localhost", 9898);
+        Client user = new Client("localhost", 9898, false);
     }
 }
