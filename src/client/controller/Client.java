@@ -31,15 +31,14 @@ public class Client
     private GUI theFrame;
     private PermissionController pControl;
     
-    public Client(String serverName, int portNumber)
+    public Client(String serverName, int portNumber, boolean shouldConnect)
     {
         try
         {
-            socket = new Socket(serverName, portNumber);
-            stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            stringOutputToSocket = new PrintWriter(socket.getOutputStream(), true);
-            objectFromSocket = new ObjectInputStream(socket.getInputStream());
-            objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+            if(shouldConnect)
+            {
+                setUpConnection(serverName, portNumber);
+            }
             theFrame = new GUI("Toolshop application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
@@ -54,15 +53,21 @@ public class Client
         }
     }
     
+    private void setUpConnection(String serverName, int portNumber) throws IOException
+    {
+        socket = new Socket(serverName, portNumber);
+        stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        stringOutputToSocket = new PrintWriter(socket.getOutputStream(), true);
+        objectFromSocket = new ObjectInputStream(socket.getInputStream());
+        objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+    }
+    
     private void prepareListeners()
     {
         try
         {
-            /*
             theFrame.getLoginButton().addActionListener(new LoginButtonListener(this,theFrame));
             theFrame.getSearchButton().addActionListener(new SearchButtonListener(this,theFrame));
-            theFrame.getLogoutButton().addActionListener(new LogoutButtonListener(this,theFrame));
-            */
         }
         catch(NullPointerException npe)
         {
@@ -134,6 +139,6 @@ public class Client
     
     public static void main(String[] args)
     {
-        Client user = new Client("localhost", 9898);
+        Client user = new Client("localhost", 9898, false);
     }
 }
