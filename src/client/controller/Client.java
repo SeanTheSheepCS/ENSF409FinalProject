@@ -35,11 +35,7 @@ public class Client
     {
         try
         {
-            socket = new Socket(serverName, portNumber);
-            stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            stringOutputToSocket = new PrintWriter(socket.getOutputStream(), true);
-            objectFromSocket = new ObjectInputStream(socket.getInputStream());
-            objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+            setUpConnection(serverName, portNumber);
             theFrame = new GUI("Toolshop application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
@@ -54,15 +50,21 @@ public class Client
         }
     }
     
+    private void setUpConnection(String serverName, int portNumber) throws IOException
+    {
+        socket = new Socket(serverName, portNumber);
+        stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        stringOutputToSocket = new PrintWriter(socket.getOutputStream(), true);
+        objectFromSocket = new ObjectInputStream(socket.getInputStream());
+        objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+    }
+    
     private void prepareListeners()
     {
         try
         {
-            /*
             theFrame.getLoginButton().addActionListener(new LoginButtonListener(this,theFrame));
             theFrame.getSearchButton().addActionListener(new SearchButtonListener(this,theFrame));
-            theFrame.getLogoutButton().addActionListener(new LogoutButtonListener(this,theFrame));
-            */
         }
         catch(NullPointerException npe)
         {
