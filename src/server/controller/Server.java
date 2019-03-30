@@ -3,14 +3,12 @@ package server.controller;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
 	private ServerSocket serverSocket;
 	private ExecutorService pool;
-	private Socket socket;
 
 	public Server() {
 		try {
@@ -37,8 +35,7 @@ public class Server {
 	public void startCommunications() {
 		try {
 			while (true) {
-				socket = serverSocket.accept();
-				ControllerRun control = new ControllerRun(socket);
+				ControllerRun control = new ControllerRun(serverSocket.accept());
 				pool.execute(control);
 			}
 		} catch (IOException e) {
@@ -50,7 +47,6 @@ public class Server {
 
 	public void closeAllStreams() {
 		try {
-			socket.close();
 			serverSocket.close();
 			pool.shutdown();
 		} catch (IOException e) {
