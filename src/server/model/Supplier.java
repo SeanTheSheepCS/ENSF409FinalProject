@@ -1,5 +1,7 @@
 package server.model;
 
+import java.io.Serializable;
+
 /**
  * The supplier for an item in the tool shop application
  * 
@@ -8,9 +10,13 @@ package server.model;
  * @since February 4th 2019
  *
  */
-public class Supplier 
+public class Supplier implements Serializable
 {
-    /** the ID of the supplier */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 834856632876385958L;
+	/** the ID of the supplier */
     private int supplierID;
     /** the name of the company */
     private String companyName;
