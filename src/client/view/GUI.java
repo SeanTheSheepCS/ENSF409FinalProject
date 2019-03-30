@@ -8,4 +8,9 @@ public class GUI extends JFrame
     {
         super(title);
     }
+    
+    public void manageInvalidLogin()
+    {
+        
+    }
 }
