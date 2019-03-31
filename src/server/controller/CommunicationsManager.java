@@ -7,51 +7,111 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
 
-import server.model.Inventory;
 import server.model.Item;
-import server.model.Order;
-import server.model.OrderLine;
-import server.model.Shop;
-import server.model.Supplier;
+/*
+ * BUGS/FEATURES to fix/finish:
+ * Better SEARCH method
+ * When sending objects make better protocol of communication, talk to Sean
+ */
 
-public class ControllerRun implements Runnable {
+/**
+ * CommunicationsManager manages communications through a socket, it sends
+ * strings and serializable items through to the other side.
+ * 
+ * @author: Jean-David Rousseau
+ * @version 1.0
+ * @since March 30th 2019
+ */
+public class CommunicationsManager implements Runnable {
+	/**
+	 * socket is communication port this class communicates through,
+	 * 
+	 * IO streams for objects and strings:
+	 * 
+	 * -objectToSocket
+	 * 
+	 * -objectFromSocket
+	 * 
+	 * -stringToSocket
+	 * 
+	 * -stringFromSocket boolean isStopped is used as a signal to terminate the
+	 * thread.
+	 * 
+	 * DatabaseController databaseControl is used to handle instructions sent from
+	 * this class.
+	 */
 	private ObjectOutputStream objectToSocket;
 	private ObjectInputStream objectFromSocket;
 	private PrintWriter stringToSocket;
 	private BufferedReader stringFromSocket;
 	private boolean isStopped;
 	private DatabaseController databaseControl;
-	private Shop shop;
-
 	private Socket socket;
 
-	public ControllerRun(Socket socket) {
+	/**
+	 * c-tor for CommunicationsManager
+	 * 
+	 * constructs:
+	 * 
+	 * - IO streams based on socket provided
+	 * 
+	 * - DatabaseController
+	 * 
+	 * - and sets isStopped to false.
+	 * 
+	 * @param socket is socket to build IOstreams on.
+	 */
+	public CommunicationsManager(Socket socket) {
 		this.socket = socket;
 		assignStreams();
 		databaseControl = new DatabaseController();
-		declareShop();
 		isStopped = false;
 	}
 
+	/**
+	 * run implements runnable, it communicates with socket until isStopped turns
+	 * true, which then closes all streams.
+	 */
 	@Override
 	public void run() {
 		while (true) {
 			if (isStopped) {
+				closeAllStreams();
 				break;
 			}
 			interpretMessageFromClient();
 		}
 	}
 
+	/**
+	 * Reads 1 line from Client and interprets it.
+	 * 
+	 * Current recognized messages:
+	 * 
+	 * *LOGIN -> checks if valid user/password combo, then sends if
+	 * ADMIN,CUSTOMER,orINVALID.
+	 * 
+	 * *LOGOUT -> nothing.
+	 * 
+	 * *SEARCH -> Searches database and sends all possible items.
+	 * 
+	 * *REQUESTITEMINFO -> gets info of 1 item in database and sends it.
+	 * 
+	 * *GETALLITEMS -> sends all items in database.
+	 * 
+	 * *DECQUANTITY -> decreases quantity of 1 item in database, nothing sent.
+	 * 
+	 * *QUIT -> sends QUIT and stops thread. * ->does nothing if empty.
+	 * 
+	 * When sending multiple objects it sends TASKINPROGRESS, folllowed by item
+	 * until last one where it sends TASKCOMPLETE then last item.
+	 */
 	public void interpretMessageFromClient() {
 		try {
 			String line = stringFromSocket.readLine();
 			String[] words = line.split(" ");
 			switch (words[0]) {
-			// default
 			case "":
 				break;
 			case "LOGIN":
@@ -76,6 +136,7 @@ public class ControllerRun implements Runnable {
 			case "LOGOUT":
 				break;
 			case "SEARCH":
+				// Fix to find better algorithm to account for spaces
 				String[] queryInfo = parseNQuery(words, 2);
 				if (queryInfo.length < 2) {
 					sendMessageToClient("INVALIDQUERY");
@@ -84,8 +145,8 @@ public class ControllerRun implements Runnable {
 				String query = queryInfo[1];
 				Item[] itemList = databaseControl.search(query);
 				for (int i = 0; i < itemList.length - 1; i++) {
-					sendItem(itemList[i]);
 					sendMessageToClient("TASKINPROGRESS");
+					sendItem(itemList[i]);
 				}
 				sendMessageToClient("TASKCOMPLETE");
 				sendItem(itemList[itemList.length - 1]);
@@ -98,10 +159,17 @@ public class ControllerRun implements Runnable {
 				}
 				String id = idInfo[1];
 				Item item = databaseControl.getInfo(id);
+				sendMessageToClient("SENDINGITEM");
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
-				// NOTE: Complete
+				Item[] allItems = databaseControl.getAllItems();
+				for (int i = 0; i < allItems.length - 1; i++) {
+					sendMessageToClient("TASKINPROGRESS");
+					sendItem(allItems[i]);
+				}
+				sendMessageToClient("TASKCOMPLETE");
+				sendItem(allItems[allItems.length - 1]);
 				break;
 			case "DECQUANTITY":
 				String[] itemInfo = parseNQuery(words, 3);
@@ -121,13 +189,14 @@ public class ControllerRun implements Runnable {
 				break;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Connection with client was terminated in controllerRun");
 			isStopped = true;
-			closeAllStreams();
-		} 
+		}
 	}
 
+	/**
+	 * closes all IO streams.
+	 */
 	private void closeAllStreams() {
 		try {
 			objectToSocket.close();
@@ -136,11 +205,16 @@ public class ControllerRun implements Runnable {
 			stringFromSocket.close();
 		} catch (IOException e) {
 			System.err.println("Failed to close all streams in controllerRun");
-
 		}
-
 	}
 
+	/**
+	 * Takes a split string and removes all empty strings.
+	 * 
+	 * @param original is split string provided.
+	 * @param n        number of non-empty strings expected.
+	 * @return String[] that doesn't contain empty strings of max size n.
+	 */
 	private String[] parseNQuery(String[] original, int n) {
 		String[] parse = new String[n];
 		int counter = 0;
@@ -156,7 +230,12 @@ public class ControllerRun implements Runnable {
 		return parse;
 	}
 
-	public void sendItem(Item item) {
+	/**
+	 * sends item to socket.
+	 * 
+	 * @param item is object to be sent, must be serializable.
+	 */
+	private void sendItem(Item item) {
 		try {
 			objectToSocket.writeObject(item);
 			objectToSocket.reset();
@@ -164,24 +243,21 @@ public class ControllerRun implements Runnable {
 		} catch (IOException e) {
 			System.err.println("Failed to send Item in controllerRun");
 		}
-
 	}
 
-	public void sendMessageToClient(String message) {
+	/**
+	 * sends string to socket.
+	 * 
+	 * @param message is string to be sent.
+	 */
+	private void sendMessageToClient(String message) {
 		stringToSocket.println(message);
 		stringToSocket.flush();
 	}
 
-	private void declareShop() {
-		// NOTE: add implementation for database
-		ArrayList<Item> itemList = new ArrayList<Item>();
-		ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
-		Order order = new Order();
-		Inventory inventory = new Inventory(itemList);
-		shop = new Shop(inventory, supplierList);
-
-	}
-
+	/**
+	 * opens IO streams based on socket provided in c-tor.
+	 */
 	private void assignStreams() {
 		try {
 			objectToSocket = new ObjectOutputStream(socket.getOutputStream());
@@ -189,8 +265,8 @@ public class ControllerRun implements Runnable {
 			stringFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			stringToSocket = new PrintWriter((socket.getOutputStream()), true);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Failed to open streams in controllerRun");
+			isStopped = true;
 		}
 
 	}
