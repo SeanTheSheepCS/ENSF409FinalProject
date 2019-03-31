@@ -37,7 +37,9 @@ public class ControllerRun implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		while(true) {
+			interpretMessageFromClient();
+		}
 
 	}
 
@@ -133,7 +135,8 @@ public class ControllerRun implements Runnable {
 	}
 
 	public void sendMessageToClient(String message) {
-
+		stringToSocket.println(message);
+		stringToSocket.flush();
 	}
 
 	private void declareShop() {

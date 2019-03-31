@@ -21,7 +21,7 @@ public class DatabaseController {
 	}
 
 	public boolean isValidLogin(String username, String password) {
-		return false;
+		return true;
 
 	}
 
@@ -35,7 +35,7 @@ public class DatabaseController {
 
 	public boolean isAdmin(String username, String password) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public Item[] search(String query) {
