@@ -27,11 +27,11 @@ public final class SearchButtonListener implements ActionListener
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before logging in.");
+            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before searching.");
         }
         catch(Exception ex)
         {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while logging in. Try restarting the program.");
+            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while searching. Try restarting the program.");
         }
     }
 

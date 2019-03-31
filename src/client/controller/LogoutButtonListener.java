@@ -7,6 +7,13 @@ import javax.swing.JOptionPane;
 
 import client.view.GUI;
 
+/**
+ * A listener that waits for the logout button to be pressed
+ * 
+ * @author Sean Kenny and Jean-David Rousseau
+ * @version 1.0
+ * @since March 31st 2019
+ */
 public class LogoutButtonListener implements ActionListener
 {
     private Client user;

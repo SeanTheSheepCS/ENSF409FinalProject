@@ -161,7 +161,19 @@ public final class Client
     
     private void readSequenceOfItems() throws IOException
     {
-        
+        try
+        {
+            String message = "";
+            do
+            {
+                Item sentItem = (Item) objectFromSocket.readObject();
+                itemsOnDisplay.add(sentItem);
+            }while(message.equals("TASKINPROGRESS"));
+        }
+        catch(ClassNotFoundException cnfe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "The server sent invalid data. Only a portion of the data will be shown.");
+        }
     }
     
     private void sendToolToSocket(Item toolToSend)

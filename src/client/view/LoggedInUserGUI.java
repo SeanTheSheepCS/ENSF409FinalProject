@@ -5,8 +5,13 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
-import client.controller.LogoutButtonListener;
-
+/**
+ * The GUI for a user that is logged in, contains a search bar
+ * 
+ * @author Sean Kenny and Jean-David Rousseau
+ * @version 1.0
+ * @since March 31st 2019
+ */
 public class LoggedInUserGUI extends GUI
 {
     private JLabel greeting;
@@ -17,6 +22,7 @@ public class LoggedInUserGUI extends GUI
     public LoggedInUserGUI(String title, String username)
     {
         super(title);
+        this.username = username;
         removeLoginCapabilities();
         addLogoutCapabilities();
     }
