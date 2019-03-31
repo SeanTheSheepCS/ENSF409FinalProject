@@ -56,6 +56,7 @@ public class ControllerRun implements Runnable {
 			case "LOGIN":
 				String[] userInfo = parseNQuery(words, 3);
 				if (userInfo.length < 3) {
+					sendMessageToClient("INVALIDQUERY");
 					break;
 				}
 				String username = userInfo[1];
@@ -76,6 +77,7 @@ public class ControllerRun implements Runnable {
 			case "SEARCH":
 				String[] queryInfo = parseNQuery(words, 2);
 				if (queryInfo.length < 2) {
+					sendMessageToClient("INVALIDQUERY");
 					break;
 				}
 				String query = queryInfo[1];
@@ -90,6 +92,7 @@ public class ControllerRun implements Runnable {
 			case "REQUESTITEMINFO":
 				String[] idInfo = parseNQuery(words, 2);
 				if (idInfo.length < 2) {
+					sendMessageToClient("INVALIDQUERY");
 					break;
 				}
 				String id = idInfo[1];
@@ -102,6 +105,7 @@ public class ControllerRun implements Runnable {
 			case "DECQUANTITY":
 				String[] itemInfo = parseNQuery(words, 3);
 				if (itemInfo.length < 3) {
+					sendMessageToClient("INVALIDQUERY");
 					break;
 				}
 				String itemId = itemInfo[1];
