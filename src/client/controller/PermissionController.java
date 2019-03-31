@@ -29,12 +29,14 @@ public final class PermissionController
     public void changePermissionToAdmin()
     {
         ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
+        ownerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, ownerFrame));
         user.setActiveGUI(ownerFrame);
     }
     
     public void changePermissionToCustomer()
     {
         customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
+        customerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, ownerFrame));
         user.setActiveGUI(customerFrame);
     }
     

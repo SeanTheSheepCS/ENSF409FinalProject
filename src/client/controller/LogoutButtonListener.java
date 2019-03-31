@@ -7,23 +7,22 @@ import javax.swing.JOptionPane;
 
 import client.view.GUI;
 
-public final class SearchButtonListener implements ActionListener
+public class LogoutButtonListener implements ActionListener
 {
     private Client user;
     private GUI frame;
     
-    public SearchButtonListener(Client user, GUI frame) 
+    public LogoutButtonListener(Client user, GUI frame)
     {
         this.user = user;
         this.frame = frame;
     }
-
     @Override
     public void actionPerformed(ActionEvent e) 
     {
         try
         {
-            user.manageSearchRequest(frame.getSearchTerm());
+            user.manageLogoutRequest();
         }
         catch(NullPointerException npe)
         {
@@ -33,6 +32,5 @@ public final class SearchButtonListener implements ActionListener
         {
             JOptionPane.showMessageDialog(frame, "An unexpected error occurred while logging in. Try restarting the program.");
         }
-    }
-
+    } 
 }

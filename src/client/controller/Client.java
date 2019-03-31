@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,6 +25,8 @@ import client.view.GUI;
  */
 public final class Client 
 {
+    private ArrayList<Item> itemsOnDisplay;
+    
     private Socket socket;
     private ObjectInputStream objectFromSocket;
     private ObjectOutputStream objectToSocket;
@@ -91,9 +94,7 @@ public final class Client
         try
         {
             stringOutputToSocket.println("LOGIN" + " " + username + " " + password);
-            System.out.println("sent message : " + "LOGIN" + " " + username + " " + password);
             String messageFromServer = stringInputFromSocket.readLine();
-            System.out.println("Got message");
             if(messageFromServer.equals("ADMIN"))
             {
                 pControl.changePermissionToAdmin();
@@ -109,41 +110,73 @@ public final class Client
         }
         catch(NullPointerException npe)
         {
-            System.out.println("Please prepare everything before trying to validate a login...");
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to validate a login...");
         }
         catch(IOException ioe)
         {
-            System.out.println("An IOException occurred while managing a login request!");
+            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a login request!");
         }
         catch(Exception e)
         {
-            System.out.println("An unexpected error occurred while managing a login request!");
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a login request!");
         }
     }
     
-    public void sendToolToSocket(Item toolToSend)
+    public void manageSearchRequest(String searchTerm)
+    {
+        try
+        {
+            stringOutputToSocket.println("SEARCH" + " " + searchTerm);
+            readSequenceOfItems();
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to search...");
+        }
+        catch(IOException ioe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a search request!");
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a search request!");
+        }
+    }
+    
+    public void manageLogoutRequest()
+    {
+        try
+        {
+            pControl.changePermissionToGuest();
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to logout...");
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a logout request!");
+        }
+    }
+    
+    private void readSequenceOfItems() throws IOException
     {
         
     }
     
-    public void requestToolInfoFromSocket()
-    {
-        
-    }
-    
-    public void interpretServerOutput(String output)
-    {
-        
-    }
-    
-    public void sendStringToGUI(String message)
+    private void sendToolToSocket(Item toolToSend)
     {
         
     }
     
     public void setActiveGUI(GUI newFrame)
     {
-        theFrame = newFrame;
+        if(newFrame != null)
+        {
+            theFrame.setVisible(false);
+            theFrame = newFrame;
+            theFrame.setVisible(true);
+        }
     }
     
     public static void main(String[] args)

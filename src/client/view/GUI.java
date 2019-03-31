@@ -2,6 +2,7 @@ package client.view;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -15,6 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import client.model.Item;
+
 /**
  * The GUI for the client
  * 
@@ -27,16 +30,16 @@ public class GUI extends JFrame
 {
     private JLabel header;
     
-    private DefaultListModel<String> dataOnDisplay;
+    private DefaultListModel<String> stringDataOnDisplay;
     private JList<String> dataStorage;
     private JScrollPane paneForData;
     
-    private JButton searchButton;
+    protected JButton searchButton;
     protected JButton loginButton;
     
     protected JTextField usernameField;
     protected JTextField passwordField;
-    private JTextField searchField;
+    protected JTextField searchField;
     
     protected JPanel northOptionsPanel;
     
@@ -79,8 +82,8 @@ public class GUI extends JFrame
         searchButton = new JButton("Search");
         loginButton = new JButton("Login");
         
-        dataOnDisplay = new DefaultListModel<String>();
-        dataStorage = new JList<String>(dataOnDisplay);
+        stringDataOnDisplay = new DefaultListModel<String>();
+        dataStorage = new JList<String>(stringDataOnDisplay);
         dataStorage.setFont(new Font("Times New Roman", Font.BOLD, 12));
         dataStorage.setVisibleRowCount(15);
         dataStorage.setPrototypeCellValue("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
@@ -125,5 +128,10 @@ public class GUI extends JFrame
     public String getPassword() throws NullPointerException
     {
         return passwordField.getText();
+    }
+    
+    public String getSearchTerm() throws NullPointerException
+    {
+        return searchField.getText();
     }
 }
