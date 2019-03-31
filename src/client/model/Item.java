@@ -7,7 +7,7 @@ package client.model;
  * @since February 4th 2019
  *
  */
-public class Item 
+public final class Item 
 {
     /** The name of the tool */
     private String toolName;
