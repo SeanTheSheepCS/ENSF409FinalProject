@@ -5,11 +5,29 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+/*
+ * BUGS/FEATURES to fix/finish:
+ * IP Address Server initialization
+ */
 
+/**
+ * Server is simple socket server that starts a CommunicationsManager/Client
+ * 
+ * @author: Jean-David Rousseau
+ * @version 1.0
+ * @since March 30th 2019
+ */
 public class Server {
+	/**
+	 * serverSocket is socket server uses, and pool that contains threads for
+	 * clients.
+	 */
 	private ServerSocket serverSocket;
 	private ExecutorService pool;
 
+	/**
+	 * c-tor, initializes pool and server socket, connects to port 9898.
+	 */
 	public Server() {
 		try {
 			pool = Executors.newFixedThreadPool(2);
@@ -21,6 +39,13 @@ public class Server {
 		System.out.println("Server is running");
 	}
 
+	/**
+	 * c-tor, initializes pool and server socket, connects to IP address provided.
+	 * 
+	 * @param port        on computer to connect to.
+	 * @param backlog     is amount of clients to keep in queue.
+	 * @param bindAddress is IP address.
+	 */
 	public Server(int port, int backlog, InetAddress bindAddress) {
 		try {
 			pool = Executors.newFixedThreadPool(2);
@@ -32,10 +57,16 @@ public class Server {
 		System.out.println("Interner Server is running");
 	}
 
+	/**
+	 * runs CommunicationManager whenever a successfull connection to a client is
+	 * made.
+	 * 
+	 * closes all streams if exception is found.
+	 */
 	public void startCommunications() {
 		try {
 			while (true) {
-				ControllerRun control = new ControllerRun(serverSocket.accept());
+				CommunicationsManager control = new CommunicationsManager(serverSocket.accept());
 				pool.execute(control);
 			}
 		} catch (IOException e) {
@@ -45,6 +76,9 @@ public class Server {
 		}
 	}
 
+	/**
+	 * closes the serverSocket and the pool.
+	 */
 	public void closeAllStreams() {
 		try {
 			serverSocket.close();
