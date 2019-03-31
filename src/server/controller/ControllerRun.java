@@ -124,9 +124,8 @@ public class ControllerRun implements Runnable {
 			// TODO Auto-generated catch block
 			System.err.println("Connection with client was terminated in controllerRun");
 			isStopped = true;
-		} finally {
 			closeAllStreams();
-		}
+		} 
 	}
 
 	private void closeAllStreams() {
