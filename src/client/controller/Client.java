@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import client.model.Item;
@@ -21,7 +22,7 @@ import client.view.GUI;
  * @since March 30th 2019
  *
  */
-public class Client 
+public final class Client 
 {
     private Socket socket;
     private ObjectInputStream objectFromSocket;
@@ -39,13 +40,14 @@ public class Client
             {
                 setUpConnection(serverName, portNumber);
             }
-            theFrame = new GUI("Toolshop application");
+            theFrame = new GUI("Toolshop Application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
         }
         catch(IOException ioe)
         {
             System.out.println("An IOException occurred while initializing the client, maybe the server is not open?");
+            JOptionPane.showMessageDialog(new JFrame("unused"), "Cannot connect to server!");
         }
         catch(Exception e)
         {
@@ -89,7 +91,9 @@ public class Client
         try
         {
             stringOutputToSocket.println("LOGIN" + " " + username + " " + password);
+            System.out.println("sent message : " + "LOGIN" + " " + username + " " + password);
             String messageFromServer = stringInputFromSocket.readLine();
+            System.out.println("Got message");
             if(messageFromServer.equals("ADMIN"))
             {
                 pControl.changePermissionToAdmin();
@@ -100,7 +104,7 @@ public class Client
             }
             else
             {
-                theFrame.manageInvalidLogin();
+                pControl.manageInvalidLogin();
             }
         }
         catch(NullPointerException npe)
@@ -137,8 +141,13 @@ public class Client
         
     }
     
+    public void setActiveGUI(GUI newFrame)
+    {
+        theFrame = newFrame;
+    }
+    
     public static void main(String[] args)
     {
-        Client user = new Client("localhost", 9898, false);
+        Client user = new Client("localhost", 9898, true);
     }
 }

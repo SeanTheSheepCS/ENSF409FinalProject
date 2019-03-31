@@ -1,6 +1,10 @@
 package client.controller;
 
+import javax.swing.JOptionPane;
+
+import client.view.CustomerGUI;
 import client.view.GUI;
+import client.view.OwnerGUI;
 
 /**
  * Controls the permissions for the Client and GUI
@@ -9,10 +13,12 @@ import client.view.GUI;
  * @version 1.0
  * @sincne March 30th 2019
  */
-public class PermissionController 
+public final class PermissionController 
 {
     private Client user;
     private GUI frame;
+    private CustomerGUI customerFrame;
+    private OwnerGUI ownerFrame;
     
     public PermissionController(Client user, GUI frame)
     {
@@ -22,16 +28,23 @@ public class PermissionController
     
     public void changePermissionToAdmin()
     {
-        
+        ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
+        user.setActiveGUI(ownerFrame);
     }
     
     public void changePermissionToCustomer()
     {
-        
+        customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
+        user.setActiveGUI(customerFrame);
     }
     
     public void changePermissionToGuest()
     {
-        
+        user.setActiveGUI(frame);
+    }
+    
+    public void manageInvalidLogin()
+    {
+        JOptionPane.showMessageDialog(frame, "Invalid credentials.");
     }
 }

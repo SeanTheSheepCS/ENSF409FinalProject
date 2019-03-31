@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -31,13 +32,13 @@ public class GUI extends JFrame
     private JScrollPane paneForData;
     
     private JButton searchButton;
-    private JButton loginButton;
+    protected JButton loginButton;
     
-    private JTextField usernameField;
-    private JTextField passwordField;
+    protected JTextField usernameField;
+    protected JTextField passwordField;
     private JTextField searchField;
     
-    private JPanel northOptionsPanel;
+    protected JPanel northOptionsPanel;
     
     private JPanel northPanel;
     private JPanel centrePanel;
@@ -106,11 +107,6 @@ public class GUI extends JFrame
         centrePanel.add(paneForData);
     }
     
-    public void manageInvalidLogin()
-    {
-        
-    }
-    
     public JButton getSearchButton()
     {
         return searchButton;
@@ -119,5 +115,15 @@ public class GUI extends JFrame
     public JButton getLoginButton()
     {
         return loginButton;
+    }
+    
+    public String getUsername() throws NullPointerException
+    {
+        return usernameField.getText();
+    }
+    
+    public String getPassword() throws NullPointerException
+    {
+        return passwordField.getText();
     }
 }

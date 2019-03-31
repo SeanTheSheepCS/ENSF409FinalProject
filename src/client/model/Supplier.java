@@ -8,7 +8,7 @@ package client.model;
  * @since February 4th 2019
  *
  */
-public class Supplier 
+public final class Supplier 
 {
     /** the ID of the supplier */
     private int supplierID;
