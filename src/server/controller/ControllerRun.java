@@ -39,9 +39,10 @@ public class ControllerRun implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			if (isStopped) {
-				interpretMessageFromClient();
+			if (!isStopped) {
+				break;
 			}
+			interpretMessageFromClient();
 		}
 	}
 
@@ -115,6 +116,8 @@ public class ControllerRun implements Runnable {
 			case "QUIT":
 				sendMessageToClient("QUIT");
 				isStopped = true;
+				break;
+			default:
 				break;
 			}
 		} catch (IOException e) {
