@@ -39,7 +39,7 @@ public class ControllerRun implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			if (!isStopped) {
+			if (isStopped) {
 				break;
 			}
 			interpretMessageFromClient();
