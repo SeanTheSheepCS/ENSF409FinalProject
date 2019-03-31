@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 import server.model.Inventory;
@@ -21,7 +22,7 @@ public class ControllerRun implements Runnable {
 	private ObjectInputStream objectFromSocket;
 	private PrintWriter stringToSocket;
 	private BufferedReader stringFromSocket;
-
+	private boolean isStopped;
 	private DatabaseController databaseControl;
 	private Shop shop;
 
@@ -32,15 +33,16 @@ public class ControllerRun implements Runnable {
 		assignStreams();
 		databaseControl = new DatabaseController();
 		declareShop();
-
+		isStopped = false;
 	}
 
 	@Override
 	public void run() {
-		while(true) {
-			interpretMessageFromClient();
+		while (true) {
+			if (isStopped) {
+				interpretMessageFromClient();
+			}
 		}
-
 	}
 
 	public void interpretMessageFromClient() {
@@ -48,6 +50,7 @@ public class ControllerRun implements Runnable {
 			String line = stringFromSocket.readLine();
 			String[] words = line.split(" ");
 			switch (words[0]) {
+			// default
 			case "":
 				break;
 			case "LOGIN":
@@ -94,7 +97,7 @@ public class ControllerRun implements Runnable {
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
-				//NOTE: Complete
+				// NOTE: Complete
 				break;
 			case "DECQUANTITY":
 				String[] itemInfo = parseNQuery(words, 3);
@@ -107,12 +110,29 @@ public class ControllerRun implements Runnable {
 				break;
 			case "QUIT":
 				sendMessageToClient("QUIT");
+				isStopped = true;
 				break;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Connection with client was terminated in controllerRun");
+			isStopped = true;
+		} finally {
+			closeAllStreams();
 		}
+	}
+
+	private void closeAllStreams() {
+		try {
+			objectToSocket.close();
+			objectFromSocket.close();
+			stringToSocket.close();
+			stringFromSocket.close();
+		} catch (IOException e) {
+			System.err.println("Failed to close all streams in controllerRun");
+
+		}
+
 	}
 
 	private String[] parseNQuery(String[] original, int n) {
@@ -131,6 +151,13 @@ public class ControllerRun implements Runnable {
 	}
 
 	public void sendItem(Item item) {
+		try {
+			objectToSocket.writeObject(item);
+			objectToSocket.reset();
+			objectToSocket.flush();
+		} catch (IOException e) {
+			System.err.println("Failed to send Item in controllerRun");
+		}
 
 	}
 
