@@ -25,7 +25,7 @@ import client.view.GUI;
  */
 public final class Client 
 {
-    private ArrayList<Item> itemsOnDisplay;
+    private ArrayList<Integer> idsOfItemsOnDisplay;
     
     private Socket socket;
     private ObjectInputStream objectFromSocket;
@@ -65,6 +65,7 @@ public final class Client
             theFrame.getLoginButton().addActionListener(new LoginButtonListener(this,theFrame));
             theFrame.getSearchButton().addActionListener(new SearchButtonListener(this,theFrame));
             theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this,theFrame));
+            theFrame.getList().addListSelectionListener(new ListListener(this, theFrame, theFrame.getList()));
         }
         catch(NullPointerException npe)
         {
@@ -167,6 +168,45 @@ public final class Client
         }
     }
     
+    public String requestItemInfo(int specifiedID)
+    {
+        try
+        {
+            stringOutputToSocket.println("REQUESTITEMINFO " + specifiedID);
+            String messageFromServer = stringInputFromSocket.readLine();
+            if(messageFromServer.equals("INVALIDQUERY"))
+            {
+                JOptionPane.showMessageDialog(theFrame, "Our servers were not able to handle your request.");
+                return null;
+            }
+            else if(messageFromServer.equals("SENDINGITEM"))
+            {
+                Item requestedItem = (Item) objectFromSocket.readObject();
+                return requestedItem.toString();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(theFrame, "A very severe error occurred. Please end the application.");
+                return null;
+            }
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get all tools...");
+            return null;
+        }
+        catch(IOException ioe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a request to get all tools!");
+            return null;
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get all tools!");
+            return null;
+        }
+    }
+    
     private void readSequenceOfItems() throws IOException
     {
         try
@@ -175,9 +215,13 @@ public final class Client
             do
             {
                 message = stringInputFromSocket.readLine();
+                if(message.equals("INVALIDQUERY"))
+                {
+                    break;
+                }
                 Item sentItem = (Item) objectFromSocket.readObject();
-                itemsOnDisplay.add(sentItem);
-                theFrame.addListingToDisplay(sentItem.toString());
+                idsOfItemsOnDisplay.add(sentItem.getToolIDNumber());
+                theFrame.addListingToDisplay(sentItem.getToolName() + ": $" + sentItem.getPrice());
             }while(message.equals("TASKINPROGRESS"));
         }
         catch(ClassNotFoundException cnfe)
@@ -203,6 +247,11 @@ public final class Client
             theFrame = newFrame;
             theFrame.setVisible(true);
         }
+    }
+    
+    public int idAtIndex(int index)
+    {
+        return idsOfItemsOnDisplay.get(index);
     }
     
     public static void main(String[] args)

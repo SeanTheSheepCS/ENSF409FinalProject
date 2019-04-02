@@ -48,9 +48,14 @@ public class GUI extends JFrame
     private JPanel centrePanel;
     private JPanel southPanel;
     
+    private boolean hasBuyingPriviledges;
+    private boolean hasDecreaseQuantityPriviledges;
+    
     public GUI(String title)
     {
         super(title);
+        hasBuyingPriviledges = false;
+        hasDecreaseQuantityPriviledges = false;
         try
         {
             setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
@@ -143,6 +148,11 @@ public class GUI extends JFrame
         return connectButton;
     }
     
+    public JList<String> getList()
+    {
+        return dataStorage;
+    }
+    
     public String getUsername() throws NullPointerException
     {
         return usernameField.getText();
@@ -156,5 +166,25 @@ public class GUI extends JFrame
     public String getSearchTerm() throws NullPointerException
     {
         return searchField.getText();
+    }
+    
+    public boolean hasBuyingPriviledges()
+    {
+        return hasBuyingPriviledges;
+    }
+    
+    public boolean hasDecreaseQuantityPriviledges()
+    {
+        return hasDecreaseQuantityPriviledges;
+    }
+    
+    public void grantBuyingPriviledges()
+    {
+        hasBuyingPriviledges = true;
+    }
+    
+    public void grantDecreaseQuantityPriviledges()
+    {
+        hasDecreaseQuantityPriviledges = true;
     }
 }

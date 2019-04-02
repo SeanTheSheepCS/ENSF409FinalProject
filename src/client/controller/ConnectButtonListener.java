@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 
 import client.view.GUI;
 
-public final class ConnectButtonListener implements ActionListener
+final class ConnectButtonListener implements ActionListener
 {
     private Client user;
     private GUI frame;
