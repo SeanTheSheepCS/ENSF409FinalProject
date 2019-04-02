@@ -51,7 +51,7 @@ public class Server {
 			pool = Executors.newFixedThreadPool(2);
 			serverSocket = new ServerSocket(port, backlog, InetAddress.getByName(bindAddress));
 		} catch (IOException e) {
-			System.out.println("Create new socket error");
+			System.err.println("Create new socket error");
 			System.out.println(e.getMessage());
 		}
 		System.out.println("Interner Server is running");
@@ -90,7 +90,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.148.1");
+		Server server = new Server(9898, 5, "127.0.0.1");
 		server.startCommunications();
 	}
 
