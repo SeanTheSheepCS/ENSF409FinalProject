@@ -35,22 +35,13 @@ public final class Client
     private GUI theFrame;
     private PermissionController pControl;
     
-    public Client(String serverName, int portNumber, boolean shouldConnect)
+    public Client()
     {
         try
         {
-            if(shouldConnect)
-            {
-                setUpConnection(serverName, portNumber);
-            }
             theFrame = new GUI("Toolshop Application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
-        }
-        catch(IOException ioe)
-        {
-            System.out.println("An IOException occurred while initializing the client, maybe the server is not open?");
-            JOptionPane.showMessageDialog(new JFrame("unused"), "Cannot connect to server!");
         }
         catch(Exception e)
         {
@@ -58,7 +49,7 @@ public final class Client
         }
     }
     
-    private void setUpConnection(String serverName, int portNumber) throws IOException
+    public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         socket = new Socket(serverName, portNumber);
         stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -73,6 +64,7 @@ public final class Client
         {
             theFrame.getLoginButton().addActionListener(new LoginButtonListener(this,theFrame));
             theFrame.getSearchButton().addActionListener(new SearchButtonListener(this,theFrame));
+            theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this,theFrame));
         }
         catch(NullPointerException npe)
         {
@@ -159,6 +151,27 @@ public final class Client
         }
     }
     
+    public void manageGetAllToolsRequest()
+    {
+        try
+        {
+            stringOutputToSocket.println("GETALLITEMS");
+            readSequenceOfItems();
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get all tools...");
+        }
+        catch(IOException ioe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a request to get all tools!");
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get all tools!");
+        }
+    }
+    
     private void readSequenceOfItems() throws IOException
     {
         try
@@ -166,13 +179,19 @@ public final class Client
             String message = "";
             do
             {
+                message = stringInputFromSocket.readLine();
                 Item sentItem = (Item) objectFromSocket.readObject();
                 itemsOnDisplay.add(sentItem);
+                theFrame.addListingToDisplay(sentItem.toString());
             }while(message.equals("TASKINPROGRESS"));
         }
         catch(ClassNotFoundException cnfe)
         {
             JOptionPane.showMessageDialog(theFrame, "The server sent invalid data. Only a portion of the data will be shown.");
+        }
+        catch(NullPointerException npe)
+        {
+            //Null should be sent if the database is empty, so we don't need to do anything!
         }
     }
     
@@ -193,6 +212,6 @@ public final class Client
     
     public static void main(String[] args)
     {
-        Client user = new Client("localhost", 9898, true);
+        Client user = new Client();
     }
 }

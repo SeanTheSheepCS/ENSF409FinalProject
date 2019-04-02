@@ -36,6 +36,7 @@ public class GUI extends JFrame
     
     protected JButton searchButton;
     protected JButton loginButton;
+    protected JButton connectButton;
     
     protected JTextField usernameField;
     protected JTextField passwordField;
@@ -60,6 +61,7 @@ public class GUI extends JFrame
             setLayout(new BorderLayout());
             add("North", northPanel);
             add("Center", centrePanel);
+            add("South", southPanel);
             
             pack();
             setVisible(true);
@@ -81,6 +83,8 @@ public class GUI extends JFrame
         
         searchButton = new JButton("Search");
         loginButton = new JButton("Login");
+        connectButton = new JButton("Connect");
+        connectButton.setHorizontalAlignment(SwingConstants.CENTER);
         
         stringDataOnDisplay = new DefaultListModel<String>();
         dataStorage = new JList<String>(stringDataOnDisplay);
@@ -92,6 +96,7 @@ public class GUI extends JFrame
         northPanel = new JPanel();
         northOptionsPanel = new JPanel();
         centrePanel = new JPanel();
+        southPanel = new JPanel();
     }
     
     private void assignComponentsToPanels()
@@ -108,6 +113,13 @@ public class GUI extends JFrame
         northPanel.add(northOptionsPanel);
         
         centrePanel.add(paneForData);
+        
+        southPanel.add(connectButton);
+    }
+    
+    public void addListingToDisplay(String itemAsString)
+    {
+        stringDataOnDisplay.addElement(itemAsString);
     }
     
     public JButton getSearchButton()
@@ -118,6 +130,11 @@ public class GUI extends JFrame
     public JButton getLoginButton()
     {
         return loginButton;
+    }
+    
+    public JButton getConnectButton()
+    {
+        return connectButton;
     }
     
     public String getUsername() throws NullPointerException
