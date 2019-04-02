@@ -25,7 +25,9 @@ public final class ConnectButtonListener implements ActionListener
         try
         {
             //GET THE IP AND SUCH!
-            user.setUpConnection("localhost", 9898);
+            String ipToConnectTo = JOptionPane.showInputDialog("Please enter the IP you want to connect to.");
+            user.setUpConnection(ipToConnectTo,9898);
+            JOptionPane.showMessageDialog(frame, "Connection successfully made!");
             user.manageGetAllToolsRequest();
         }
         catch(IOException ioe)

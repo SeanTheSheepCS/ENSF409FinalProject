@@ -1,8 +1,11 @@
 package client.view;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Font;
-import java.util.ArrayList;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -10,13 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import client.model.Item;
 
 /**
  * The GUI for the client
@@ -53,6 +53,11 @@ public class GUI extends JFrame
         super(title);
         try
         {
+            setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
+            Image cursorImage = Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/screwdriverTransparentBackground.png")); 
+            Cursor hammerWithFaceCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point(this.getX(),this.getY()), "hammerWithFace");
+            setCursor(hammerWithFaceCursor);
+            
             setResizable(false);
             
             initializeComponents();
@@ -68,6 +73,7 @@ public class GUI extends JFrame
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             System.out.println("An unexpected exception occurred while loading the elements of the GUI.");
         }
     }

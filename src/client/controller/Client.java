@@ -76,11 +76,6 @@ public final class Client
         }
     }
     
-    public Item readItemFromSocket()
-    {
-        return null;
-    }
-    
     public void manageLoginRequest(String username, String password)
     {
         try
