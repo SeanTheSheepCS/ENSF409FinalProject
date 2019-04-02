@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Color;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -107,6 +108,7 @@ public class GUI extends JFrame
         northPanel = new JPanel();
         northOptionsPanel = new JPanel();
         centrePanel = new JPanel();
+        centrePanel.setBackground(Color.RED);
         southPanel = new JPanel();
     }
     
