@@ -38,8 +38,15 @@ public class Item implements Serializable
         supplier = null;
         quantity = 0;
     }
-    
-    /**
+    public Item(int id, String name, int quantity, double price, int supplierId) {
+    	toolName=name;
+    	toolIDNumber=id;
+    	this.quantity=quantity;
+    	this.price=price;
+    	supplier=new Supplier();
+    	supplier.setSupplierID(supplierId);
+	}
+	/**
      * sets the name of the tool
      * 
      * @param toolName the new name of the tool
