@@ -12,10 +12,7 @@ import java.io.Serializable;
  */
 public final class Item implements Serializable
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -7253419941834456467L;
+
 	/** The name of the tool */
     private String toolName;
     /** the ID number of the tool */
