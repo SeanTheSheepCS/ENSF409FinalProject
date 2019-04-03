@@ -1,4 +1,5 @@
-package client.model;
+package common.model;
+
 /**
  * One item of the tool shop application
  * 

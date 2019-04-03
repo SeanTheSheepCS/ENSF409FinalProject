@@ -1,4 +1,4 @@
-package client.model;
+package common.model;
 
 /**
  * The supplier for an item in the tool shop application
