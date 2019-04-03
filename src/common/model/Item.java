@@ -1,5 +1,7 @@
 package common.model;
 
+import java.io.Serializable;
+
 /**
  * One item of the tool shop application
  * 
@@ -8,9 +10,13 @@ package common.model;
  * @since February 4th 2019
  *
  */
-public final class Item 
+public final class Item implements Serializable
 {
-    /** The name of the tool */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7253419941834456467L;
+	/** The name of the tool */
     private String toolName;
     /** the ID number of the tool */
     private int toolIDNumber;

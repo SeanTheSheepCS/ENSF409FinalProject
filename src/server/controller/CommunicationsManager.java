@@ -240,10 +240,11 @@ public class CommunicationsManager implements Runnable {
 	private void sendItem(Item item) {
 		try {
 			objectToSocket.writeObject(item);
-			objectToSocket.reset();
+			//objectToSocket.reset();
 			objectToSocket.flush();
 		} catch (IOException e) {
-			System.err.println("Failed to send Item in controllerRun");
+			e.printStackTrace();
+			System.err.println("Failed to send Item in communicationsManager");
 		}
 	}
 
