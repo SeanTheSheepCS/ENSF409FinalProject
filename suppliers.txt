@@ -1,0 +1,20 @@
+8001;Grommet Builders;788 30th St., SE, Calgary;Fred
+8002;Pong Works;749 Dufferin Blvd., SE, Calgary;Bart
+8003;Wiley Inc.;26 40th St., SE, Calgary;BillyBob
+8004;Winork Manufacturing Inc.;156 51st Ave., SE, Calgary;Marty
+8005;Grab Bag Inc.;138 42nd Ave., NE, Calgary;Monty
+8006;Paddy's Manufacturing;311 McCall Way, NE, Calgary;Barney
+8007;Smickles Industries;966 Smed Lane, SE, Calgary;Lisa
+8008;Thangs Inc.;879 37th Ave., NE, Calgary;Thelma
+8009;Flip Works Inc.;472 Ogden Dale Rd., SE, Calgary;Rory
+8010;Irkle Industries;754 Sunridge Way, NE, Calgary;Irma
+8011;Biff Builders;690 19th St., NE, Calgary;Borjn
+8012;Twinkles Inc.;318 29th St.,NE, Calgary;Barkley
+8013;Piddles Industries;238 112th Ave., NE, Calgary;Parnell
+8014;Tic Tac Manufacturing;598 Palmer Rd., NE, Calgary;Teisha
+8015;Knock Knock Inc.;363 42nd Ave., NE, Calgary;Ned
+8016;Corky Things Inc.;35 McCall Way, NE, Calgary;Corrine
+8017;E & O Industries;883 44th St., SE, Calgary;Stan
+8018;Fiddleys Makes Stuff Inc.;350 27th St., NE, Calgary;Fredda
+8019;Horks and Stuff Manufacturing;997 42nd Ave., NE, Calgary;Harold
+8020;Wings Works;754 48th St., SE, Calgary;Wing

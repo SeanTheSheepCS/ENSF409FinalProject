@@ -33,7 +33,7 @@ public class Server {
 			pool = Executors.newFixedThreadPool(5);
 			serverSocket = new ServerSocket(9898);
 		} catch (IOException e) {
-			System.out.println("Create new socket error");
+			System.out.println("\nCreate new socket error");
 			System.out.println(e.getMessage());
 		}
 		System.out.println("Server is running");
@@ -91,7 +91,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.148.191");
+		Server server = new Server(9898, 5, "10.13.106.32");
 		server.startCommunications();
 	}
 

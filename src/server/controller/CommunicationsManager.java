@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import server.model.Item;
 /*
@@ -165,13 +166,13 @@ public class CommunicationsManager implements Runnable {
 				break;
 			case "GETALLITEMS":
 				try {
-					Item[] allItems = databaseControl.getAllItems();
-					for (int i = 0; i < allItems.length - 1; i++) {
+					ArrayList<Item> allItems = databaseControl.getAllItems();
+					for (int i = 0; i < allItems.size() - 1; i++) {
 						sendMessageToClient("TASKINPROGRESS");
-						sendItem(allItems[i]);
+						sendItem(allItems.get(i));
 					}
 					sendMessageToClient("TASKCOMPLETE");
-					sendItem(allItems[allItems.length - 1]);
+					sendItem(allItems.get(allItems.size() - 1));
 				} catch (NullPointerException e) {
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(null);

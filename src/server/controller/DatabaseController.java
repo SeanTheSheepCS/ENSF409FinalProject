@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ public class DatabaseController implements JDBCredentials {
 
 	public DatabaseController() {
 		declareShop();
+		initializeConnection();
 	}
 
 	public void initializeConnection() {
@@ -121,7 +123,7 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
-	private void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
+	private synchronized void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
 			String salesContact) {
 		try {
 			String query = "INSERT INTO supplier (supplierID, supplierName, supplierAddress, supplierSalesContact) values (?,?,?,?)";
@@ -148,8 +150,8 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
-	public void insertItemPreparedStatement(int itemID, String itemName, double itemPrice, int itemSupplierID,
-			int itemQuantity) {
+	private synchronized void insertItemPreparedStatement(int itemID, String itemName, double itemPrice,
+			int itemSupplierID, int itemQuantity) {
 		try {
 			String query = "INSERT INTO item (itemID, itemName, itemPrice, itemSupplierID, itemQuantity) values (?,?,?,?,?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
@@ -184,17 +186,18 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
+	/*
+	 * admin - admin joe - customer bob - hunter2
+	 */
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public boolean isValidLogin(String username, String password) {
 		return true;
 
-	}
-
-	public Connection getConnectionToDatabase() {
-		return connectionToDatabase;
-	}
-
-	public void setConnectionToDatabase(Connection connectionToDatabase) {
-		this.connectionToDatabase = connectionToDatabase;
 	}
 
 	public boolean isAdmin(String username, String password) {
@@ -203,7 +206,19 @@ public class DatabaseController implements JDBCredentials {
 	}
 
 	public Item[] search(String query) {
-		// TODO Auto-generated method stub
+		/*try {
+			String query = "SELECT * FROM users where username= ? and password =?";
+			PreparedStatement pStat = conn.prepareStatement(query);
+			pStat.setString(1, "Jackson");
+			pStat.setString(2, "123456");
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				System.out.println(rs.getString("username") + " " + rs.getString("password"));
+			}
+			pStat.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}*/
 		return null;
 	}
 
@@ -212,14 +227,38 @@ public class DatabaseController implements JDBCredentials {
 		return null;
 	}
 
-	public Item[] getAllItems() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Item> getAllItems() {
+
+		try {
+			String query = "SELECT * FROM item";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			ArrayList<Item> itemList=new ArrayList<Item>();
+			int itemID;
+			String itemName; 
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				itemID = rs.getInt("itemID");
+				itemName=rs.getString("itemName");
+				itemPrice=rs.getDouble("itemPrice");
+				itemSupplierID=rs.getInt("itemSupplierID");
+				itemQuantity=rs.getInt("itemQuantity");
+				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
+				itemList.add(newItem);
+			}
+			pStat.close();
+			return itemList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		databaseController.readSupplierFileAndSend();
-	}
+		databaseController.getAllItems();
+	}*/
 }
