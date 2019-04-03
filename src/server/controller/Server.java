@@ -30,7 +30,7 @@ public class Server {
 	 */
 	public Server() {
 		try {
-			pool = Executors.newFixedThreadPool(2);
+			pool = Executors.newFixedThreadPool(5);
 			serverSocket = new ServerSocket(9898);
 		} catch (IOException e) {
 			System.out.println("Create new socket error");
@@ -67,6 +67,7 @@ public class Server {
 		try {
 			while (true) {
 				CommunicationsManager control = new CommunicationsManager(serverSocket.accept());
+				System.out.println("Connected to a client");
 				pool.execute(control);
 			}
 		} catch (IOException e) {
@@ -90,7 +91,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "127.0.0.1");
+		Server server = new Server(9898, 5, "10.13.148.191");
 		server.startCommunications();
 	}
 

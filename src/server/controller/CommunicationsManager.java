@@ -35,8 +35,9 @@ public class CommunicationsManager implements Runnable {
 	 * 
 	 * -stringToSocket
 	 * 
-	 * -stringFromSocket boolean isStopped is used as a signal to terminate the
-	 * thread.
+	 * -stringFromSocket
+	 * 
+	 * boolean isStopped is used as a signal to terminate the thread.
 	 * 
 	 * DatabaseController databaseControl is used to handle instructions sent from
 	 * this class.
@@ -163,13 +164,18 @@ public class CommunicationsManager implements Runnable {
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
-				Item[] allItems = databaseControl.getAllItems();
-				for (int i = 0; i < allItems.length - 1; i++) {
-					sendMessageToClient("TASKINPROGRESS");
-					sendItem(allItems[i]);
+				try {
+					Item[] allItems = databaseControl.getAllItems();
+					for (int i = 0; i < allItems.length - 1; i++) {
+						sendMessageToClient("TASKINPROGRESS");
+						sendItem(allItems[i]);
+					}
+					sendMessageToClient("TASKCOMPLETE");
+					sendItem(allItems[allItems.length - 1]);
+				} catch (NullPointerException e) {
+					sendMessageToClient("TASKCOMPLETE");
+					sendItem(null);
 				}
-				sendMessageToClient("TASKCOMPLETE");
-				sendItem(allItems[allItems.length - 1]);
 				break;
 			case "DECQUANTITY":
 				String[] itemInfo = parseNQuery(words, 3);
