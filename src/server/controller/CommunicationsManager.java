@@ -162,12 +162,16 @@ public class CommunicationsManager implements Runnable {
 			case "GETALLITEMS":
 				try {
 					ArrayList<Item> allItems = databaseControl.getAllItems();
+					
 					for (int i = 0; i < allItems.size() - 1; i++) {
 						sendMessageToClient("TASKINPROGRESS");
-						sendItem(allItems.get(i));
+						//sendItem(allItems.get(i));
+						System.out.println("SENT\n"+allItems.get(i));
+						System.out.println(stringFromSocket.readLine());
 					}
 					sendMessageToClient("TASKCOMPLETE");
-					sendItem(allItems.get(allItems.size() - 1));
+					//sendItem(allItems.get(allItems.size() - 1));
+					
 				} catch (NullPointerException e) {
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(null);
@@ -240,7 +244,7 @@ public class CommunicationsManager implements Runnable {
 	private void sendItem(Item item) {
 		try {
 			objectToSocket.writeObject(item);
-			//objectToSocket.reset();
+			objectToSocket.reset();
 			objectToSocket.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -255,6 +259,7 @@ public class CommunicationsManager implements Runnable {
 	 */
 	private void sendMessageToClient(String message) {
 		stringToSocket.println(message);
+		System.out.println(message);
 		stringToSocket.flush();
 	}
 

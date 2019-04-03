@@ -12,10 +12,7 @@ import java.io.Serializable;
  */
 public final class Supplier implements Serializable
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 4112394403210248036L;
+
 	/** the ID of the supplier */
     private int supplierID;
     /** the name of the company */
