@@ -39,6 +39,7 @@ public final class Client
     {
         try
         {
+            idsOfItemsOnDisplay = new ArrayList<Integer>();
             theFrame = new GUI("Toolshop Application");
             pControl = new PermissionController(this,theFrame);
             prepareListeners();
@@ -160,11 +161,11 @@ public final class Client
         }
         catch(IOException ioe)
         {
+            ioe.printStackTrace();
             JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a request to get all tools!");
         }
         catch(Exception e)
         {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get all tools!");
         }
     }
@@ -223,7 +224,9 @@ public final class Client
                 Item sentItem = (Item) objectFromSocket.readObject();
                 idsOfItemsOnDisplay.add(sentItem.getToolIDNumber());
                 theFrame.addListingToDisplay(sentItem.getToolName() + ": $" + sentItem.getPrice());
-            }while(message.equals("TASKINPROGRESS"));
+                stringOutputToSocket.println("GOTITEM");
+                System.out.println(message);
+            }while(message.contains("TASKINPROGRESS"));
         }
         catch(ClassNotFoundException cnfe)
         {
