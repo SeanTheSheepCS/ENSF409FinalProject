@@ -1,11 +1,8 @@
 package server.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -40,8 +37,6 @@ public class CommunicationsManager implements Runnable {
 	 */
 	private ObjectOutputStream objectToSocket;
 	private ObjectInputStream objectFromSocket;
-	private PrintWriter stringToSocket;
-	private BufferedReader stringFromSocket;
 	private boolean isStopped;
 	private DatabaseController databaseControl;
 	private Socket socket;
@@ -106,7 +101,7 @@ public class CommunicationsManager implements Runnable {
 	 */
 	public void interpretMessageFromClient() {
 		try {
-			String line = stringFromSocket.readLine();
+			String line = (String) objectFromSocket.readObject();
 			String[] words = line.split(" ");
 			switch (words[0]) {
 			case "":
@@ -162,19 +157,22 @@ public class CommunicationsManager implements Runnable {
 			case "GETALLITEMS":
 				try {
 					ArrayList<Item> allItems = databaseControl.getAllItems();
-					
+
 					for (int i = 0; i < allItems.size() - 1; i++) {
 						sendMessageToClient("TASKINPROGRESS");
 						sendItem(allItems.get(i));
-						System.out.println("SENT\n"+allItems.get(i));
-						System.out.println(stringFromSocket.readLine());
+						System.out.println("SENT\n" + allItems.get(i));
+						System.out.println((String) objectFromSocket.readObject());
 					}
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(allItems.get(allItems.size() - 1));
-					
+
 				} catch (NullPointerException e) {
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(null);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				break;
 			case "DECQUANTITY":
@@ -197,6 +195,9 @@ public class CommunicationsManager implements Runnable {
 		} catch (IOException e) {
 			System.err.println("Connection with client was terminated in controllerRun");
 			isStopped = true;
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 
@@ -207,8 +208,6 @@ public class CommunicationsManager implements Runnable {
 		try {
 			objectToSocket.close();
 			objectFromSocket.close();
-			stringToSocket.close();
-			stringFromSocket.close();
 		} catch (IOException e) {
 			System.err.println("Failed to close all streams in controllerRun");
 		}
@@ -258,9 +257,16 @@ public class CommunicationsManager implements Runnable {
 	 * @param message is string to be sent.
 	 */
 	private void sendMessageToClient(String message) {
-		stringToSocket.println(message);
-		System.out.println(message);
-		stringToSocket.flush();
+		try {
+			objectToSocket.writeObject(message);
+			objectToSocket.reset();
+			objectToSocket.flush();
+			System.out.println(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -270,8 +276,6 @@ public class CommunicationsManager implements Runnable {
 		try {
 			objectToSocket = new ObjectOutputStream(socket.getOutputStream());
 			objectFromSocket = new ObjectInputStream(socket.getInputStream());
-			stringFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			stringToSocket = new PrintWriter((socket.getOutputStream()), true);
 		} catch (IOException e) {
 			System.err.println("Failed to open streams in controllerRun");
 			isStopped = true;
