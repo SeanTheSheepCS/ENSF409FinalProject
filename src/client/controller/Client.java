@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import client.model.Item;
+import common.model.Item;
 import client.view.GUI;
 
 /**
@@ -164,6 +164,7 @@ public final class Client
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get all tools!");
         }
     }
@@ -192,17 +193,17 @@ public final class Client
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get all tools...");
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get a tool...");
             return null;
         }
         catch(IOException ioe)
         {
-            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a request to get all tools!");
+            JOptionPane.showMessageDialog(theFrame, "An IOException occurred while managing a request to get a tool!");
             return null;
         }
         catch(Exception e)
         {
-            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get all tools!");
+            JOptionPane.showMessageDialog(theFrame, "An unexpected error occurred while managing a request to get a tool!");
             return null;
         }
     }
