@@ -30,8 +30,6 @@ public final class Client
     private Socket socket;
     private ObjectInputStream objectFromSocket;
     private ObjectOutputStream objectToSocket;
-    private BufferedReader stringInputFromSocket;
-    private PrintWriter stringOutputToSocket;
     private GUI theFrame;
     private PermissionController pControl;
     
@@ -53,8 +51,6 @@ public final class Client
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         socket = new Socket(serverName, portNumber);
-        stringInputFromSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        stringOutputToSocket = new PrintWriter(socket.getOutputStream(), true);
         objectFromSocket = new ObjectInputStream(socket.getInputStream());
         objectToSocket = new ObjectOutputStream(socket.getOutputStream());
     }
@@ -82,8 +78,8 @@ public final class Client
     {
         try
         {
-            stringOutputToSocket.println("LOGIN" + " " + username + " " + password);
-            String messageFromServer = stringInputFromSocket.readLine();
+            sendStringMessage("LOGIN" + " " + username + " " + password);
+            String messageFromServer = interpretStringMessage();
             if(messageFromServer.equals("ADMIN"))
             {
                 pControl.changePermissionToAdmin();
@@ -115,7 +111,7 @@ public final class Client
     {
         try
         {
-            stringOutputToSocket.println("SEARCH" + " " + searchTerm);
+            sendStringMessage("SEARCH" + " " + searchTerm);
             readSequenceOfItems();
         }
         catch(NullPointerException npe)
@@ -152,7 +148,7 @@ public final class Client
     {
         try
         {
-            stringOutputToSocket.println("GETALLITEMS");
+            sendStringMessage("GETALLITEMS");
             readSequenceOfItems();
         }
         catch(NullPointerException npe)
@@ -174,8 +170,8 @@ public final class Client
     {
         try
         {
-            stringOutputToSocket.println("REQUESTITEMINFO " + specifiedID);
-            String messageFromServer = stringInputFromSocket.readLine();
+            sendStringMessage("REQUESTITEMINFO " + specifiedID);
+            String messageFromServer = interpretStringMessage();
             if(messageFromServer.equals("INVALIDQUERY"))
             {
                 JOptionPane.showMessageDialog(theFrame, "Our servers were not able to handle your request.");
@@ -216,7 +212,7 @@ public final class Client
             String message = "";
             do
             {
-                message = stringInputFromSocket.readLine();
+                message = interpretStringMessage();
                 if(message.equals("INVALIDQUERY"))
                 {
                     break;
@@ -224,9 +220,9 @@ public final class Client
                 Item sentItem = (Item) objectFromSocket.readObject();
                 idsOfItemsOnDisplay.add(sentItem.getToolIDNumber());
                 theFrame.addListingToDisplay(sentItem.getToolName() + ": $" + sentItem.getPrice());
-                stringOutputToSocket.println("GOTITEM");
+                sendStringMessage("GOTITEM");
                 System.out.println(message);
-            }while(message.contains("TASKINPROGRESS"));
+            }while(message.equals("TASKINPROGRESS"));
         }
         catch(ClassNotFoundException cnfe)
         {
@@ -241,6 +237,25 @@ public final class Client
     private void sendToolToSocket(Item toolToSend)
     {
         
+    }
+    
+    private void sendStringMessage(String message) throws IOException
+    {
+        objectToSocket.writeObject(message);
+    }
+    
+    private String interpretStringMessage() throws IOException
+    {
+        try
+        {
+            String message = (String) objectFromSocket.readObject();
+            return message;
+        }
+        catch(ClassNotFoundException cnfe)
+        {
+            JOptionPane.showMessageDialog(theFrame,"How are you running Java without the String class???????????");
+            return "?";
+        }
     }
     
     public void setActiveGUI(GUI newFrame)
