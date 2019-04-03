@@ -33,7 +33,16 @@ public final class Item
         quantity = 0;
     }
     
-    /**
+    public Item(int itemID, String itemName, int itemQuantity, double itemPrice, int itemSupplierID) {
+    	toolName = itemName;
+        toolIDNumber = itemID;
+        price = itemPrice;
+        supplier = new Supplier();
+        supplier.setSupplierID(itemSupplierID);
+        quantity = itemQuantity;
+	}
+
+	/**
      * sets the name of the tool
      * 
      * @param toolName the new name of the tool

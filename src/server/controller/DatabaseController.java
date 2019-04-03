@@ -11,10 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import common.model.Item;
+import common.model.Supplier;
 import server.model.Inventory;
-import server.model.Item;
 import server.model.Shop;
-import server.model.Supplier;
 
 public class DatabaseController implements JDBCredentials {
 	private Connection connectionToDatabase;

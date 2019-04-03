@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import common.model.Item;
+import common.model.Supplier;
+
 /**
  * The front end for the tool shop application
  * 

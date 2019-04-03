@@ -9,12 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import server.model.Item;
-/*
- * BUGS/FEATURES to fix/finish:
- * Better SEARCH method
- * When sending objects make better protocol of communication, talk to Sean
- */
+import common.model.Item;
 
 /**
  * CommunicationsManager manages communications through a socket, it sends

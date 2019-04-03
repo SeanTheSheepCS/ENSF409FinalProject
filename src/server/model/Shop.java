@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import common.model.Item;
+import common.model.Supplier;
+
 /**
  * The shop for the tool shop application
  * 

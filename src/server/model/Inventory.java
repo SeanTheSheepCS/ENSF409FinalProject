@@ -1,6 +1,8 @@
 package server.model;
 import java.util.ArrayList;
 
+import common.model.Item;
+
 /**
  * The inventory a tool shop application
  * 

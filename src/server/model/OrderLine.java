@@ -1,4 +1,7 @@
 package server.model;
+
+import common.model.Item;
+
 /**
  * An orderline for orders in the tool shop application
  * 
