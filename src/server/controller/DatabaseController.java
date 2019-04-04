@@ -36,10 +36,6 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
-	public void decreaseItemQuantity(String itemId, String quantity) {
-
-	}
-
 	/*
 	 * admin - admin joe - customer bob - hunter2
 	 */
@@ -102,6 +98,27 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 		}
 		return false;
+
+	}
+
+	public void decreaseItemQuantity(String itemId, String quantity) {
+		try {
+			String query = "SELECT * FROM item WHERE itemID=(?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setInt(1, Integer.parseInt(itemId));
+			ResultSet rs = pStat.executeQuery();
+			if (rs.next()) {
+				int currentQuantity = rs.getInt("itemQuantity");
+				if(currentQuantity-Integer.parseInt(quantity) < 40) {
+					
+				}
+			}
+			pStat.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}
 
 	}
 
