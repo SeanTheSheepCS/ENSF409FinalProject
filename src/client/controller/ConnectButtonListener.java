@@ -24,6 +24,7 @@ final class ConnectButtonListener implements ActionListener
     {
         try
         {
+            frame.setCursorToWaitState();
             //GET THE IP AND SUCH!
             String ipToConnectTo = JOptionPane.showInputDialog("Please enter the IP you want to connect to.");
             user.setUpConnection(ipToConnectTo,9898);
@@ -41,6 +42,10 @@ final class ConnectButtonListener implements ActionListener
         catch(Exception ex)
         {
             JOptionPane.showMessageDialog(frame, "An unexpected error occurred while connecting. Try restarting the program.");
+        }
+        finally
+        {
+            frame.setCursorToScrewdriver();
         }
     }
 

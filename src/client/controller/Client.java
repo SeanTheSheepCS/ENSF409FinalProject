@@ -26,10 +26,7 @@ import client.view.GUI;
 public final class Client 
 {
     private ArrayList<Integer> idsOfItemsOnDisplay;
-    
-    private Socket socket;
-    private ObjectInputStream objectFromSocket;
-    private ObjectOutputStream objectToSocket;
+    private CommunicationManager comsManager;
     private GUI theFrame;
     private PermissionController pControl;
     
@@ -40,19 +37,13 @@ public final class Client
             idsOfItemsOnDisplay = new ArrayList<Integer>();
             theFrame = new GUI("Toolshop Application");
             pControl = new PermissionController(this,theFrame);
+            comsManager = new CommunicationManager();
             prepareListeners();
         }
         catch(Exception e)
         {
             System.out.println("An unexpected error occurred while initializing the client.");
         }
-    }
-    
-    public void setUpConnection(String serverName, int portNumber) throws IOException
-    {
-        socket = new Socket(serverName, portNumber);
-        objectFromSocket = new ObjectInputStream(socket.getInputStream());
-        objectToSocket = new ObjectOutputStream(socket.getOutputStream());
     }
     
     private void prepareListeners()
@@ -78,13 +69,12 @@ public final class Client
     {
         try
         {
-            sendStringMessage("LOGIN" + " " + username + " " + password);
-            String messageFromServer = interpretStringMessage();
-            if(messageFromServer.equals("ADMIN"))
+            String loginValidation = comsManager.sendLoginMessageAndReturnServerOutput(username, password);
+            if(loginValidation.equals("ADMIN"))
             {
                 pControl.changePermissionToAdmin();
             }
-            else if(messageFromServer.equals("CUSTOMER"))
+            else if(loginValidation.equals("CUSTOMER"))
             {
                 pControl.changePermissionToCustomer();
             }
@@ -111,8 +101,8 @@ public final class Client
     {
         try
         {
-            sendStringMessage("SEARCH" + " " + searchTerm);
-            readSequenceOfItems();
+            comsManager.sendMessage("SEARCH" + " " + searchTerm);
+            getSequenceOfItems();
         }
         catch(NullPointerException npe)
         {
@@ -148,8 +138,8 @@ public final class Client
     {
         try
         {
-            sendStringMessage("GETALLITEMS");
-            readSequenceOfItems();
+            comsManager.sendMessage("GETALLITEMS");
+            getSequenceOfItems();
         }
         catch(NullPointerException npe)
         {
@@ -170,22 +160,15 @@ public final class Client
     {
         try
         {
-            sendStringMessage("REQUESTITEMINFO " + specifiedID);
-            String messageFromServer = interpretStringMessage();
-            if(messageFromServer.equals("INVALIDQUERY"))
+            Item desiredItem = comsManager.readItemInfo(specifiedID);
+            if(desiredItem != null)
             {
-                JOptionPane.showMessageDialog(theFrame, "Our servers were not able to handle your request.");
-                return null;
-            }
-            else if(messageFromServer.equals("SENDINGITEM"))
-            {
-                Item requestedItem = (Item) objectFromSocket.readObject();
-                return requestedItem.toString();
+                return desiredItem.toString();
             }
             else
             {
-                JOptionPane.showMessageDialog(theFrame, "A very severe error occurred. Please end the application.");
-                return null;
+                JOptionPane.showMessageDialog(theFrame, "A very severe error has occurred, please end the application.");
+                return "A very severe error has occurred, please end the application.";
             }
         }
         catch(NullPointerException npe)
@@ -205,24 +188,16 @@ public final class Client
         }
     }
     
-    private void readSequenceOfItems() throws IOException
+    private void getSequenceOfItems() throws IOException
     {
         try
         {
-            String message = "";
-            do
+            ArrayList<Item>listOfSentItems = comsManager.readSequenceOfItems();
+            for(Item sentItem : listOfSentItems)
             {
-                message = interpretStringMessage();
-                if(message.equals("INVALIDQUERY"))
-                {
-                    break;
-                }
-                Item sentItem = (Item) objectFromSocket.readObject();
                 idsOfItemsOnDisplay.add(sentItem.getToolIDNumber());
                 theFrame.addListingToDisplay(sentItem.getToolName() + ": $" + sentItem.getPrice());
-                sendStringMessage("GOTITEM");
-                System.out.println(message);
-            }while(message.equals("TASKINPROGRESS"));
+            }
         }
         catch(ClassNotFoundException cnfe)
         {
@@ -234,30 +209,6 @@ public final class Client
         }
     }
     
-    private void sendToolToSocket(Item toolToSend)
-    {
-        
-    }
-    
-    private void sendStringMessage(String message) throws IOException
-    {
-        objectToSocket.writeObject(message);
-    }
-    
-    private String interpretStringMessage() throws IOException
-    {
-        try
-        {
-            String message = (String) objectFromSocket.readObject();
-            return message;
-        }
-        catch(ClassNotFoundException cnfe)
-        {
-            JOptionPane.showMessageDialog(theFrame,"How are you running Java without the String class???????????");
-            return "?";
-        }
-    }
-    
     public void setActiveGUI(GUI newFrame)
     {
         if(newFrame != null)
@@ -266,6 +217,11 @@ public final class Client
             theFrame = newFrame;
             theFrame.setVisible(true);
         }
+    }
+    
+    public void setUpConnection(String serverName, int portNumber) throws IOException
+    {
+        comsManager.setUpConnection(serverName, portNumber);
     }
     
     public int idAtIndex(int index)

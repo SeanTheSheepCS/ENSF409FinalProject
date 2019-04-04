@@ -60,10 +60,7 @@ public class GUI extends JFrame
         hasDecreaseQuantityPriviledges = false;
         try
         {
-            setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
-            Image cursorImage = Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/screwdriverTransparentBackground.png")); 
-            Cursor hammerWithFaceCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point(this.getX(),this.getY()), "hammerWithFace");
-            setCursor(hammerWithFaceCursor);
+            setCursorToScrewdriver();
             
             setResizable(false);
             
@@ -83,6 +80,19 @@ public class GUI extends JFrame
             e.printStackTrace();
             System.out.println("An unexpected exception occurred while loading the elements of the GUI.");
         }
+    }
+    
+    public void setCursorToScrewdriver()
+    {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
+        Image cursorImage = Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/screwdriverTransparentBackground.png")); 
+        Cursor screwdriverCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point(this.getX(),this.getY()), "screwdriverCursor");
+        setCursor(screwdriverCursor);
+    }
+    
+    public void setCursorToWaitState()
+    {
+        setCursor(Cursor.WAIT_CURSOR);
     }
     
     private void initializeComponents()
