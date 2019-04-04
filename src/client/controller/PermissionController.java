@@ -16,9 +16,9 @@ import client.view.OwnerGUI;
 public final class PermissionController 
 {
     private Client user;
+    private Owner ownerUser;
+    private Customer customerUser;
     private GUI frame;
-    private CustomerGUI customerFrame;
-    private OwnerGUI ownerFrame;
     
     public PermissionController(Client user, GUI frame)
     {
@@ -28,21 +28,39 @@ public final class PermissionController
     
     public void changePermissionToAdmin()
     {
-        ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
+        if(customerUser != null)
+        {
+            customerUser.endSession();
+        }
+        user.endSession();
+        OwnerGUI ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
         ownerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, ownerFrame));
-        user.setActiveGUI(ownerFrame);
+        Owner ownerUser = new Owner(ownerFrame);
     }
     
     public void changePermissionToCustomer()
     {
-        customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
-        customerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, ownerFrame));
-        user.setActiveGUI(customerFrame);
+        if(ownerUser != null)
+        {
+            ownerUser.endSession();
+        }
+        user.endSession();
+        CustomerGUI customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
+        customerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, customerFrame));
+        Customer customerUser = new Customer(customerFrame);
     }
     
     public void changePermissionToGuest()
     {
-        user.setActiveGUI(frame);
+        if(ownerUser != null)
+        {
+            ownerUser.endSession();
+        }
+        if(customerUser != null)
+        {
+            customerUser.endSession();
+        }
+        user.startSession();
     }
     
     public void manageInvalidLogin()

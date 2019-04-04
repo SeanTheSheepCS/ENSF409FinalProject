@@ -38,9 +38,13 @@ public class ToolInfoPaneGUI extends JDialog
     
     private void initializeComponents()
     {
-        infoLabel = new JLabel(toolInfo);
+        String toolInfoLabelFriendly = "<html>" + toolInfo.replaceAll("\n", "<br/>") + "</html>";
+        infoLabel = new JLabel(toolInfoLabelFriendly);
         buyButton = new JButton("Buy");
         decreaseQuantityButton = new JButton("Decrease Quantity");
+        
+        centrePanel = new JPanel();
+        southPanel = new JPanel();
     }
     
     private void addToPanels()
@@ -66,7 +70,7 @@ public class ToolInfoPaneGUI extends JDialog
         setLayout(new BorderLayout());
         add("Center", centrePanel);
         add("South", southPanel);
-        setSize(400,140);
+        setSize(700,200);
         setResizable(false);
         setVisible(true);
     }

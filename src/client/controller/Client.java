@@ -23,7 +23,7 @@ import client.view.GUI;
  * @since March 30th 2019
  *
  */
-public final class Client 
+public class Client 
 {
     private ArrayList<Integer> idsOfItemsOnDisplay;
     private CommunicationManager comsManager;
@@ -36,6 +36,22 @@ public final class Client
         {
             idsOfItemsOnDisplay = new ArrayList<Integer>();
             theFrame = new GUI("Toolshop Application");
+            pControl = new PermissionController(this,theFrame);
+            comsManager = new CommunicationManager();
+            prepareListeners();
+        }
+        catch(Exception e)
+        {
+            System.out.println("An unexpected error occurred while initializing the client.");
+        }
+    }
+    
+    public Client(GUI frame)
+    {
+        try
+        {
+            idsOfItemsOnDisplay = new ArrayList<Integer>();
+            theFrame = frame;
             pControl = new PermissionController(this,theFrame);
             comsManager = new CommunicationManager();
             prepareListeners();
@@ -209,14 +225,14 @@ public final class Client
         }
     }
     
-    public void setActiveGUI(GUI newFrame)
+    public void endSession()
     {
-        if(newFrame != null)
-        {
-            theFrame.setVisible(false);
-            theFrame = newFrame;
-            theFrame.setVisible(true);
-        }
+        theFrame.setVisible(false);
+    }
+    
+    public void startSession()
+    {
+        theFrame.setVisible(true);
     }
     
     public void setUpConnection(String serverName, int portNumber) throws IOException

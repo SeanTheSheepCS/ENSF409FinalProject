@@ -24,14 +24,17 @@ class ListListener implements ListSelectionListener
     @Override
     public void valueChanged(ListSelectionEvent e) 
     {
-        int index =  listArea.getSelectedIndex();
-        if(index >= 0)
+        if(e.getValueIsAdjusting())
         {
-            int toolID = user.idAtIndex(index);
-            String toolInfo = user.requestItemInfo(toolID);
-            if(toolInfo != null)
+            int index =  listArea.getSelectedIndex();
+            if(index >= 0)
             {
-                ToolInfoPaneGUI infoPane = new ToolInfoPaneGUI(user, frame, toolInfo,toolID);
+                int toolID = user.idAtIndex(index);
+                String toolInfo = user.requestItemInfo(toolID);
+                if(toolInfo != null)
+                {
+                    ToolInfoPaneGUI infoPane = new ToolInfoPaneGUI(user, frame, toolInfo,toolID);
+                }
             }
         }
     }
