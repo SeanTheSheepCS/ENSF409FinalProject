@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -40,7 +41,7 @@ public class GUI extends JFrame
     protected JButton connectButton;
     
     protected JTextField usernameField;
-    protected JTextField passwordField;
+    protected JPasswordField passwordField;
     protected JTextField searchField;
     
     protected JPanel northOptionsPanel;
@@ -90,7 +91,7 @@ public class GUI extends JFrame
         header.setHorizontalAlignment(SwingConstants.CENTER);
         
         usernameField = new JTextField();
-        passwordField = new JTextField();
+        passwordField = new JPasswordField();
         searchField = new JTextField();
         
         searchButton = new JButton("Search");
@@ -162,7 +163,7 @@ public class GUI extends JFrame
     
     public String getPassword() throws NullPointerException
     {
-        return passwordField.getText();
+        return new String(passwordField.getPassword());
     }
     
     public String getSearchTerm() throws NullPointerException
