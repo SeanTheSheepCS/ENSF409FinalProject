@@ -135,13 +135,13 @@ public class CommunicationsManager implements Runnable {
 					break;
 				}
 				String query = queryInfo[1];
-				Item[] itemList = databaseControl.search(query);
-				for (int i = 0; i < itemList.length - 1; i++) {
+				ArrayList<Item> itemList = databaseControl.search(query);
+				for (int i = 0; i < itemList.size() - 1; i++) {
 					sendMessageToClient("TASKINPROGRESS");
-					sendItem(itemList[i]);
+					sendItem(itemList.get(i));
 				}
 				sendMessageToClient("TASKCOMPLETE");
-				sendItem(itemList[itemList.length - 1]);
+				sendItem(itemList.get(itemList.size()-1));
 				break;
 			case "REQUESTITEMINFO":
 				String[] idInfo = parseNQuery(words, 2);

@@ -205,26 +205,62 @@ public class DatabaseController implements JDBCredentials {
 		return true;
 	}
 
-	public Item[] search(String query) {
-		/*try {
-			String query = "SELECT * FROM users where username= ? and password =?";
-			PreparedStatement pStat = conn.prepareStatement(query);
-			pStat.setString(1, "Jackson");
-			pStat.setString(2, "123456");
+	public ArrayList<Item> search(String search) {
+		try {
+			
+			String query = "SELECT * FROM item WHERE itemName LIKE '%or%'";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			ArrayList<Item> itemList=new ArrayList<Item>();
+			int itemID;
+			String itemName; 
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
 			ResultSet rs = pStat.executeQuery();
 			while (rs.next()) {
-				System.out.println(rs.getString("username") + " " + rs.getString("password"));
+				itemID = rs.getInt("itemID");
+				itemName=rs.getString("itemName");
+				itemPrice=rs.getDouble("itemPrice");
+				itemSupplierID=rs.getInt("itemSupplierID");
+				itemQuantity=rs.getInt("itemQuantity");
+				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
+				itemList.add(newItem);
 			}
 			pStat.close();
+			return itemList;
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}*/
-		return null;
+			return null;
+		}
 	}
 
 	public Item getInfo(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String query = "SELECT * FROM item WHERE itemID=(?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setInt(1, Integer.parseInt(id));
+			int itemID;
+			String itemName; 
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
+			ResultSet rs = pStat.executeQuery();
+			if(rs.next()) {
+				itemID = rs.getInt("itemID");
+				itemName=rs.getString("itemName");
+				itemPrice=rs.getDouble("itemPrice");
+				itemSupplierID=rs.getInt("itemSupplierID");
+				itemQuantity=rs.getInt("itemQuantity");
+				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
+				pStat.close();
+				return newItem;
+			}
+			return null;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public ArrayList<Item> getAllItems() {
@@ -256,9 +292,9 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		databaseController.getAllItems();
-	}*/
+		System.out.println(databaseController.getInfo("1000").toString());
+	}
 }
