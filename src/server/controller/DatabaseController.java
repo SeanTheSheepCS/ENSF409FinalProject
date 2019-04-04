@@ -36,6 +36,205 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	public void decreaseItemQuantity(String itemId, String quantity) {
+
+	}
+
+	/*
+	 * admin - admin joe - customer bob - hunter2
+	 */
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public boolean isValidLogin(String username, String password) {
+//Fix for leaks
+		try {
+			String query = "SELECT * FROM users WHERE username =(?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setString(1, username);
+			ResultSet rs = pStat.executeQuery();
+			if (rs.next()) {
+				String passwordReceived = rs.getString("password");
+				PasswordDecoder decode = new PasswordDecoder(password, passwordReceived);
+				Boolean isValid = decode.decodePassword();
+
+				if (isValid) {
+					pStat.close();
+					return true;
+				}
+			}
+			pStat.close();
+			return false;
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return false;
+
+	}
+
+	public boolean isAdmin(String username, String password) {
+		try {
+			if (isValidLogin(username, password)) {
+				String query = "SELECT * FROM users WHERE username =(?)";
+				PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+				pStat.setString(1, username);
+				ResultSet rs = pStat.executeQuery();
+				if (rs.next()) {
+					int admin = rs.getInt("isAdmin");
+					pStat.close();
+					if (admin == 0) {
+						return false;
+					} else {
+						return true;
+					}
+				}
+				pStat.close();
+				return false;
+			}
+			return false;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return false;
+
+	}
+
+	public ArrayList<Item> search(String search) {
+		try {
+
+			String query = "SELECT * FROM item WHERE itemName LIKE '%(?)%'";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setString(1, search);
+			ArrayList<Item> itemList = new ArrayList<Item>();
+			int itemID;
+			String itemName;
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				itemID = rs.getInt("itemID");
+				itemName = rs.getString("itemName");
+				itemPrice = rs.getDouble("itemPrice");
+				itemSupplierID = rs.getInt("itemSupplierID");
+				itemQuantity = rs.getInt("itemQuantity");
+				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				getSupplierForItem(newItem);
+				itemList.add(newItem);
+			}
+			pStat.close();
+			return itemList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Item getInfo(String id) {
+		try {
+			String query = "SELECT * FROM item WHERE itemID=(?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setInt(1, Integer.parseInt(id));
+			int itemID;
+			String itemName;
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
+			ResultSet rs = pStat.executeQuery();
+			if (rs.next()) {
+				itemID = rs.getInt("itemID");
+				itemName = rs.getString("itemName");
+				itemPrice = rs.getDouble("itemPrice");
+				itemSupplierID = rs.getInt("itemSupplierID");
+				itemQuantity = rs.getInt("itemQuantity");
+				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				getSupplierForItem(newItem);
+				pStat.close();
+				return newItem;
+			}
+			return null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public ArrayList<Item> getAllItems() {
+
+		try {
+			String query = "SELECT * FROM item";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			ArrayList<Item> itemList = new ArrayList<Item>();
+			int itemID;
+			String itemName;
+			double itemPrice;
+			int itemSupplierID;
+			int itemQuantity;
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				itemID = rs.getInt("itemID");
+				itemName = rs.getString("itemName");
+				itemPrice = rs.getDouble("itemPrice");
+				itemSupplierID = rs.getInt("itemSupplierID");
+				itemQuantity = rs.getInt("itemQuantity");
+				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				getSupplierForItem(newItem);
+				itemList.add(newItem);
+			}
+			pStat.close();
+			return itemList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private void getSupplierForItem(Item item) {
+
+		try {
+			String query = "SELECT * FROM supplier WHERE supplierID =(?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setInt(1, item.getSupplier().getSupplierID());
+			ResultSet rs = pStat.executeQuery();
+			if (rs.next()) {
+				item.getSupplier().setAddress(rs.getString("supplierAddress"));
+				item.getSupplier().setCompanyName(rs.getString("supplierName"));
+				item.getSupplier().setSalesContact(rs.getString("supplierSalesContact"));
+			}
+			pStat.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void closeConnection() {
+		try {
+			connectionToDatabase.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void declareShop() {
+		// NOTE: add implementation for database
+		ArrayList<Item> itemList = new ArrayList<Item>();
+		ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
+		Inventory inventory = new Inventory(itemList);
+		shop = new Shop(inventory, supplierList);
+
+	}
+
 	protected void readItemFileAndSend() {
 
 		BufferedReader reader;
@@ -81,6 +280,23 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	private synchronized void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
+			String salesContact) {
+		try {
+			String query = "INSERT INTO supplier (supplierID, supplierName, supplierAddress, supplierSalesContact) values (?,?,?,?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			pStat.setInt(1, supplierID);
+			pStat.setString(2, companyName);
+			pStat.setString(3, address);
+			pStat.setString(4, salesContact);
+			int rowCount = pStat.executeUpdate();
+			System.out.println("row Count = " + rowCount);
+			pStat.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void readSupplierFileAndSend() {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader("suppliers.txt"));
@@ -123,33 +339,6 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
-	private synchronized void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
-			String salesContact) {
-		try {
-			String query = "INSERT INTO supplier (supplierID, supplierName, supplierAddress, supplierSalesContact) values (?,?,?,?)";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setInt(1, supplierID);
-			pStat.setString(2, companyName);
-			pStat.setString(3, address);
-			pStat.setString(4, salesContact);
-			int rowCount = pStat.executeUpdate();
-			System.out.println("row Count = " + rowCount);
-			pStat.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void closeConnection() {
-		try {
-			connectionToDatabase.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
 	private synchronized void insertItemPreparedStatement(int itemID, String itemName, double itemPrice,
 			int itemSupplierID, int itemQuantity) {
 		try {
@@ -168,133 +357,14 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
-	public String readDataFromDatabase() {
-		return null;
-
-	}
-
-	private void declareShop() {
-		// NOTE: add implementation for database
-		ArrayList<Item> itemList = new ArrayList<Item>();
-		ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
-		Inventory inventory = new Inventory(itemList);
-		shop = new Shop(inventory, supplierList);
-
-	}
-
-	public void decreaseItemQuantity(String itemId, String quantity) {
-
-	}
-
-	/*
-	 * admin - admin joe - customer bob - hunter2
-	 */
-	/**
-	 * 
-	 * @param username
-	 * @param password
-	 * @return
-	 */
-	public boolean isValidLogin(String username, String password) {
-		return true;
-
-	}
-
-	public boolean isAdmin(String username, String password) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	public ArrayList<Item> search(String search) {
-		try {
-			
-			String query = "SELECT * FROM item WHERE itemName LIKE '%or%'";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			ArrayList<Item> itemList=new ArrayList<Item>();
-			int itemID;
-			String itemName; 
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName=rs.getString("itemName");
-				itemPrice=rs.getDouble("itemPrice");
-				itemSupplierID=rs.getInt("itemSupplierID");
-				itemQuantity=rs.getInt("itemQuantity");
-				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
-				itemList.add(newItem);
-			}
-			pStat.close();
-			return itemList;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public Item getInfo(String id) {
-		try {
-			String query = "SELECT * FROM item WHERE itemID=(?)";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setInt(1, Integer.parseInt(id));
-			int itemID;
-			String itemName; 
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
-			ResultSet rs = pStat.executeQuery();
-			if(rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName=rs.getString("itemName");
-				itemPrice=rs.getDouble("itemPrice");
-				itemSupplierID=rs.getInt("itemSupplierID");
-				itemQuantity=rs.getInt("itemQuantity");
-				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
-				pStat.close();
-				return newItem;
-			}
-			return null;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public ArrayList<Item> getAllItems() {
-
-		try {
-			String query = "SELECT * FROM item";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			ArrayList<Item> itemList=new ArrayList<Item>();
-			int itemID;
-			String itemName; 
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName=rs.getString("itemName");
-				itemPrice=rs.getDouble("itemPrice");
-				itemSupplierID=rs.getInt("itemSupplierID");
-				itemQuantity=rs.getInt("itemQuantity");
-				Item newItem=new Item(itemID,itemName,itemQuantity,itemPrice,itemSupplierID);
-				itemList.add(newItem);
-			}
-			pStat.close();
-			return itemList;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		System.out.println(databaseController.getInfo("1000").toString());
+		if (databaseController.isAdmin("joe", "customer")) {
+			System.out.println("valid admin");
+		} else {
+			System.out.println("NO");
+		}
+
 	}
 }

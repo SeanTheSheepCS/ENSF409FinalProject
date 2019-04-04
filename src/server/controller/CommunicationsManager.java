@@ -128,20 +128,18 @@ public class CommunicationsManager implements Runnable {
 			case "LOGOUT":
 				break;
 			case "SEARCH":
-				// Fix to find better algorithm to account for spaces
-				String[] queryInfo = parseNQuery(words, 2);
-				if (queryInfo.length < 2) {
-					sendMessageToClient("INVALIDQUERY");
-					break;
-				}
+				String[] queryInfo = parseNQuery(words, Integer.MAX_VALUE);
+				//for (int j = 0; j < queryInfo.length; j++) {
+					//String query = queryInfo[j];
 				String query = queryInfo[1];
-				ArrayList<Item> itemList = databaseControl.search(query);
-				for (int i = 0; i < itemList.size() - 1; i++) {
-					sendMessageToClient("TASKINPROGRESS");
-					sendItem(itemList.get(i));
-				}
-				sendMessageToClient("TASKCOMPLETE");
-				sendItem(itemList.get(itemList.size()-1));
+					ArrayList<Item> itemList = databaseControl.search(query);
+					for (int i = 0; i < itemList.size() - 1; i++) {
+						sendMessageToClient("TASKINPROGRESS");
+						sendItem(itemList.get(i));
+					}
+					sendMessageToClient("TASKCOMPLETE");
+					sendItem(itemList.get(itemList.size() - 1));
+				//}
 				break;
 			case "REQUESTITEMINFO":
 				String[] idInfo = parseNQuery(words, 2);
@@ -152,6 +150,7 @@ public class CommunicationsManager implements Runnable {
 				String id = idInfo[1];
 				Item item = databaseControl.getInfo(id);
 				sendMessageToClient("SENDINGITEM");
+				System.out.print("ITEMREQUESTSENTTOCLIENT");
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
@@ -161,9 +160,10 @@ public class CommunicationsManager implements Runnable {
 					for (int i = 0; i < allItems.size() - 1; i++) {
 						sendMessageToClient("TASKINPROGRESS");
 						sendItem(allItems.get(i));
-						System.out.println("SENT\n" + allItems.get(i));
-						System.out.println((String) objectFromSocket.readObject());
+
+						System.out.print((String) objectFromSocket.readObject());
 					}
+					System.out.println("SENTALLITEMS\n");
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(allItems.get(allItems.size() - 1));
 
@@ -261,7 +261,6 @@ public class CommunicationsManager implements Runnable {
 			objectToSocket.writeObject(message);
 			objectToSocket.reset();
 			objectToSocket.flush();
-			System.out.println(message);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
