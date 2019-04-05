@@ -12,6 +12,11 @@ import client.view.OwnerGUI;
  */
 public final class Owner extends Client
 {
+    /**
+     * creates an Owner with a given OwnerGUI
+     * 
+     * @param frame the OwnerGUI that this owner will use
+     */
     public Owner(OwnerGUI frame)
     {
         super(frame);

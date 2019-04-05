@@ -10,6 +10,12 @@ package client.view;
  */
 public class OwnerGUI extends LoggedInUserGUI
 {
+    /**
+     * creates an OwnerGUI with a given title and username, the owner has decrease quantity priviledges
+     * 
+     * @param title the title of this GUI
+     * @param username the username the owner logged in with
+     */
     public OwnerGUI(String title, String username)
     {
         super(title,username);

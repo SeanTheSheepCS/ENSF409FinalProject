@@ -15,17 +15,30 @@ import client.view.OwnerGUI;
  */
 public final class PermissionController 
 {
+    /** the user that this permission controller belongs to */
     private Client user;
+    /** if this user is logged in as an owner, this will be the new active client */
     private Owner ownerUser;
+    /** if this user is logged in in as a customer, this will be the new active client */
     private Customer customerUser;
+    /** the frame that is displayed for the user WITH THEIR CURRENT PERMISSIONS TAKEN INTO ACCOUNT */
     private GUI frame;
     
+    /**
+     * Creates a permission controller for a given user and frame 
+     * 
+     * @param user the Client this pController is for
+     * @param frame the GUI this pController is for
+     */
     public PermissionController(Client user, GUI frame)
     {
         this.user = user;
         this.frame = frame;
     }
     
+    /**
+     * changes the permission to admin for this user
+     */
     public void changePermissionToAdmin()
     {
         if(customerUser != null)
@@ -39,6 +52,9 @@ public final class PermissionController
         ownerUser.startSession();
     }
     
+    /**
+     * changes the permission to customer for this user
+     */
     public void changePermissionToCustomer()
     {
         if(ownerUser != null)
@@ -52,6 +68,9 @@ public final class PermissionController
         customerUser.startSession();
     }
     
+    /**
+     * returns permission to guest for this user
+     */
     public void changePermissionToGuest()
     {
         if(ownerUser != null)
@@ -65,6 +84,9 @@ public final class PermissionController
         user.startSession();
     }
     
+    /**
+     * displays a message if the credentials were invalid
+     */
     public void manageInvalidLogin()
     {
         JOptionPane.showMessageDialog(frame, "Invalid credentials.");

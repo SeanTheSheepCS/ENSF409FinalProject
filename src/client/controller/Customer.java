@@ -12,6 +12,11 @@ import client.view.CustomerGUI;
  */
 public final class Customer extends Client
 {
+    /**
+     * creates a customer with a given CustomerGUI
+     * 
+     * @param frame the customer GUI this customer should use
+     */
     public Customer(CustomerGUI frame)
     {
         super(frame);

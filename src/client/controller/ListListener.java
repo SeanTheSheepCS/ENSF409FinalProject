@@ -8,12 +8,29 @@ import javax.swing.event.ListSelectionListener;
 import client.toolinfopane.view.ToolInfoPaneGUI;
 import client.view.GUI;
 
+/**
+ * A listener for when an entry in the list is selected
+ * 
+ * @author Sean Kenny and Jean-David Rousseau
+ * @version 1.0
+ * @since April 5th 2019
+ */
 class ListListener implements ListSelectionListener
 {
+    /** the user that this client will use to get IDs associated with indices */
     private Client user;
+    /** the listArea that was clicked */
     private JList<String> listArea;
+    /** the frame that the popup should be associated with */
     private GUI frame;
     
+    /**
+     * creates a ListListener attached with the given elements
+     * 
+     * @param user the user that this client will use to get IDs associated with indices
+     * @param frame the frame that the popup should be associated with
+     * @param listArea the listArea that was clicked 
+     */
     public ListListener(Client user, GUI frame, JList<String> listArea)
     {
         this.user = user;
@@ -21,6 +38,11 @@ class ListListener implements ListSelectionListener
         this.frame = frame;
     }
 
+    /**
+     * This triggers twice when a list index is clicked. Only clicks when the value was adjusting count
+     * 
+     * @param e unused
+     */
     @Override
     public void valueChanged(ListSelectionEvent e) 
     {

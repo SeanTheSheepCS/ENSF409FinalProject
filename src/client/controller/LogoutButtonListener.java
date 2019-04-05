@@ -16,14 +16,28 @@ import client.view.GUI;
  */
 public class LogoutButtonListener implements ActionListener
 {
+    /** the Client this logout button should log out */
     private Client user;
+    /** the frame the logout should modify */
     private GUI frame;
     
+    /**
+     * generate a logout button listener with a given user that it should log out and frame that it should modify
+     * 
+     * @param user the Client that should be logged out if the button is pressed
+     * @param frame the GUI that should be modified if the button is pressed
+     */
     public LogoutButtonListener(Client user, GUI frame)
     {
         this.user = user;
         this.frame = frame;
     }
+    
+    /**
+     * Logs the user out
+     * 
+     * @param e unused
+     */
     @Override
     public void actionPerformed(ActionEvent e) 
     {

@@ -16,15 +16,28 @@ import client.view.GUI;
  */
 public final class LoginButtonListener implements ActionListener
 {
+    /** the user that the login will modify */
     private Client user;
+    /** the GUI that a successful login will modify */
     private GUI frame;
     
+    /**
+     * Creates a login button listener with the given elements 
+     * 
+     * @param user the user that the login will modify
+     * @param frame the GUI that a successful login will modify
+     */
     public LoginButtonListener(Client user, GUI frame) 
     {
         this.user = user;
         this.frame = frame;
     }
 
+    /**
+     * Gets fields from the GUI and attempts a login
+     * 
+     * @param e unused
+     */
     @Override
     public void actionPerformed(ActionEvent e) 
     {

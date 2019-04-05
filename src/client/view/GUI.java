@@ -51,9 +51,16 @@ public class GUI extends JFrame
     private JPanel centrePanel;
     private JPanel southPanel;
     
+    /** true if this user is allowed to buy (is a customer), false otherwise */
     private boolean hasBuyingPriviledges;
+    /** true if this user is allowed to decrease quantity (is an owner), false otherwise */
     private boolean hasDecreaseQuantityPriviledges;
     
+    /**
+     * creates a GUI with a given title (GUIS by default have no buying or decreasing quantity priviledges)
+     * 
+     * @param title the title of the GUI
+     */
     public GUI(String title)
     {
         super(title);
@@ -83,6 +90,9 @@ public class GUI extends JFrame
         }
     }
     
+    /**
+     * changes the cursor to a screwdriver
+     */
     public void setCursorToScrewdriver()
     {
         setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
@@ -91,11 +101,18 @@ public class GUI extends JFrame
         setCursor(screwdriverCursor);
     }
     
+    /**
+     * sets the cursor to the wait cursor
+     */
     public void setCursorToWaitState()
     {
         setCursor(Cursor.WAIT_CURSOR);
     }
     
+    /**
+     * Initializes the components that go into panels.
+     * Also initializes the panels.
+     */
     private void initializeComponents()
     {
         header = new JLabel("Tool Shop Application");
@@ -125,6 +142,9 @@ public class GUI extends JFrame
         southPanel = new JPanel();
     }
     
+    /**
+     * assigns the components to the panels that they belong in
+     */
     private void assignComponentsToPanels()
     {
         northOptionsPanel.setLayout(new BoxLayout(northOptionsPanel, BoxLayout.X_AXIS));
@@ -143,21 +163,33 @@ public class GUI extends JFrame
         southPanel.add(connectButton);
     }
     
+    /**
+     * IN PROGRESS
+     */
     public void enterConnectedState()
     {
-        
+        //TODO: Implementation
     }
     
+    /**
+     * IN PROGRESS
+     */
     public void exitConnectedState()
     {
-        
+        //TODO: Implementation
     }
     
+    /**
+     * clears the scroll pane at the centre of the screen
+     */
     public void clearListings()
     {
         stringDataOnDisplay.clear();
     }
     
+    /**
+     * adds a listing to the scroll pane at the centre of the screen
+     */
     public void addListingToDisplay(String itemAsString)
     {
         stringDataOnDisplay.addElement(itemAsString);

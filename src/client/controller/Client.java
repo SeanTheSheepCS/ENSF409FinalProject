@@ -25,11 +25,18 @@ import client.view.GUI;
  */
 public class Client 
 {
+    /** An arraylist containing the IDS of the items currenty on display on theFrame */
     private ArrayList<Integer> idsOfItemsOnDisplay;
+    /** manages the communication for the client */
     private CommunicationManager comsManager;
+    /** the GUI attached to this client */
     private GUI theFrame;
+    /** controls logins and logouts for this client */
     private PermissionController pControl;
-    
+
+    /**
+     * creates a frame and listeners, also initializes the permission controller and coms manager.
+     */
     public Client()
     {
         try
@@ -46,7 +53,12 @@ public class Client
         }
     }
     
-    public Client(GUI frame)
+    /**
+     * For use by classes that extend client such as customer and owner, generates a client with a given frame.
+     * 
+     * @param frame the frame to initalize this client with
+     */
+    protected Client(GUI frame)
     {
         try
         {
@@ -62,6 +74,13 @@ public class Client
         }
     }
     
+    /**
+     * prepares the following listeners that the client needs.
+     * -login button listener
+     * -search button listener
+     * -connect button listener
+     * -list selection listener
+     */
     private void prepareListeners()
     {
         try
@@ -81,6 +100,12 @@ public class Client
         }
     }
     
+    /**
+     * Handles a login request by giving asking the coms manager to send a message and giving the work to the permission controller.
+     * 
+     * @param username username that the GUI detected
+     * @param password the password that the GUI detected
+     */
     public void manageLoginRequest(String username, String password)
     {
         try
@@ -113,6 +138,11 @@ public class Client
         }
     }
     
+    /**
+     * Handles a search request by clearing the GUI's entries and then searching for a given term
+     * 
+     * @param searchTerm the term to search for
+     */
     public void manageSearchRequest(String searchTerm)
     {
         try
@@ -135,6 +165,9 @@ public class Client
         }
     }
     
+    /**
+     * tells the permission controller to change the permission to guest
+     */
     public void manageLogoutRequest()
     {
         try
@@ -151,6 +184,9 @@ public class Client
         }
     }
     
+    /**
+     * sends a message to get all items, reads all the items, and then displays them on the GUI
+     */
     public void manageGetAllToolsRequest()
     {
         try
@@ -173,6 +209,11 @@ public class Client
         }
     }
     
+    /**
+     * requests info for an item with a specific ID
+     * 
+     * @param specifiedID the ID of the tool we want info of
+     */
     public String requestItemInfo(int specifiedID)
     {
         try
@@ -205,6 +246,9 @@ public class Client
         }
     }
     
+    /**
+     * reads a sequence of items from the server read through the comsManager
+     */
     private void getSequenceOfItems() throws IOException
     {
         try
@@ -227,32 +271,57 @@ public class Client
         }
     }
     
+    /**
+     * clears all entries in the GUI and clears the ID list within Client
+     */
     public void clearEntries()
     {
         theFrame.clearListings();
         idsOfItemsOnDisplay.clear();
     }
     
+    /**
+     * closes the window
+     */
     public void endSession()
     {
         theFrame.setVisible(false);
     }
     
+    /**
+     * opens the window
+     */
     public void startSession()
     {
         theFrame.setVisible(true);
     }
     
+    /**
+     * sets up a connection at a given serverName and portNumber
+     * 
+     * @param serverName the IP to connect to
+     * @param portNumber the portnumber (should always be 9898)
+     * @throws IOException
+     */
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         comsManager.setUpConnection(serverName, portNumber);
     }
     
+    /**
+     * closes the connection of this client
+     */
     public void endConnection()
     {
-        
+        //TODO: Implementation
     }
     
+    /**
+     * returns the ID at an index
+     * 
+     * @param index the index in the IDList we are intrested in
+     * @return the ID at the given index
+     */
     public int idAtIndex(int index)
     {
         return idsOfItemsOnDisplay.get(index);

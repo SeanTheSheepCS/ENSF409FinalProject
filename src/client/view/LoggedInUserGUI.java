@@ -19,6 +19,12 @@ public class LoggedInUserGUI extends GUI
     
     private String username;
     
+    /**
+     * creates a GUI for a user that is logged in
+     * 
+     * @param title the title of the GUI
+     * @param username the username this user logged in with
+     */
     public LoggedInUserGUI(String title, String username)
     {
         super(title);
@@ -27,6 +33,9 @@ public class LoggedInUserGUI extends GUI
         addLogoutCapabilities();
     }
     
+    /**
+     * removes login capabilities from the frame, necessary since we inherited from a class that did have login capabilities
+     */
     private void removeLoginCapabilities()
     {
         super.northOptionsPanel.remove(usernameField);
@@ -36,6 +45,9 @@ public class LoggedInUserGUI extends GUI
         super.northOptionsPanel.remove(searchButton);
     }
     
+    /**
+     * adds logout capabilities to the frame
+     */
     private void addLogoutCapabilities()
     {
         greeting = new JLabel("Welcome, " + username);

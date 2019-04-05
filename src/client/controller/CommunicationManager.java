@@ -20,10 +20,16 @@ import common.model.Item;
  */
 public class CommunicationManager 
 {
+    /** the socket that this cManager talks with */
     private Socket socket;
+    /** objects will be recieved from the server through this stream */
     private ObjectInputStream objectFromSocket;
+    /** objects will be sent to the server through this stream */
     private ObjectOutputStream objectToSocket;
     
+    /**
+     * all values in the cManager are set to null
+     */
     public CommunicationManager()
     {
         socket = null;
@@ -31,6 +37,13 @@ public class CommunicationManager
         objectToSocket = null;
     }
     
+    /**
+     * connects to a given IP and port number
+     * 
+     * @param serverName the IP address to connect to
+     * @param portNumber the port number to use
+     * @throws IOException
+     */
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         socket = new Socket(serverName, portNumber);
@@ -38,6 +51,11 @@ public class CommunicationManager
         objectToSocket = new ObjectOutputStream(socket.getOutputStream());
     }
     
+    /**
+     * ends the connection with the server
+     * 
+     * @throws IOException
+     */
     public void endConnection() throws IOException
     {
         objectFromSocket.close();
@@ -45,11 +63,24 @@ public class CommunicationManager
         socket.close();
     }
     
+    /**
+     * reads an item that the server sent
+     * 
+     * @return the item read
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public Item readItem() throws IOException, ClassNotFoundException
     {
         return (Item) readObject();
     }
     
+    /**
+     * reads a string that the server sent
+     * 
+     * @return the String the server sent
+     * @throws IOException
+     */
     public String readString() throws IOException
     {
         try
@@ -65,16 +96,34 @@ public class CommunicationManager
         }
     }
     
+    /**
+     * reads a generic object from the socket
+     * 
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private Object readObject() throws IOException, ClassNotFoundException
     {
         return objectFromSocket.readObject();
     }
     
+    /**
+     * sends a string message to the server
+     * 
+     * @throws IOException
+     */
     public void sendMessage(String message) throws IOException
     {
         objectToSocket.writeObject(message);
     }
     
+    /**
+     * reads a sequence of items from the server
+     * 
+     * @return an ArrayList of items containing all the items the server sent
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public ArrayList<Item> readSequenceOfItems() throws IOException, ClassNotFoundException
     {
         ArrayList<Item> itemsOnDisplay = new ArrayList<Item>();
@@ -101,6 +150,14 @@ public class CommunicationManager
         }
     }
     
+    /**
+     * gets the info of an item from the items ID
+     * 
+     * @param specifiedID the ID of the item we want to return
+     * @return the item with the given ID
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public Item readItemInfo(int specifiedID) throws IOException, ClassNotFoundException
     {
         sendMessage("REQUESTITEMINFO " + specifiedID);
@@ -119,6 +176,14 @@ public class CommunicationManager
         }
     }
     
+    /**
+     * sends a message for a login to the server and returns the message sent back by the server
+     * 
+     * @param username the username entered by the user
+     * @param password the password entered by the user
+     * @return the message the server sent back
+     * @throws IOException
+     */
     public String sendLoginMessageAndReturnServerOutput(String username, String password) throws IOException
     {
         sendMessage("LOGIN" + " " + username + " " + password);
