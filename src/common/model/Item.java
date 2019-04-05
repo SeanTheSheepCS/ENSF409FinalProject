@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * One item of the tool shop application
  * 
- * @author Sean Kenny
+ * @author Sean Kenny and Jean-David Rousseau
  * @version 1.0
  * @since February 4th 2019
  *

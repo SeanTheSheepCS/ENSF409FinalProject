@@ -5,7 +5,7 @@ import java.time.LocalDate;
 /**
  * An order the tool shop application writes
  * 
- * @author Sean Kenny
+ * @author Sean Kenny and Jean-David Rousseau
  * @version 1.0
  * @since February 4th 2019
  *
