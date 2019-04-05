@@ -139,4 +139,10 @@ public class Shop
             System.out.println("An error occured while writing orders. The latest order has been saved but not written.");
         }
     }
+
+	public OrderLine createNewOrder(int currentQuantity) {
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -14,8 +14,13 @@ import java.util.ArrayList;
 import common.model.Item;
 import common.model.Supplier;
 import server.model.Inventory;
+import server.model.OrderLine;
 import server.model.Shop;
 
+/*
+ * ErrorChecking -> more
+ * Close Streams properly
+ */
 public class DatabaseController implements JDBCredentials {
 	private Connection connectionToDatabase;
 	private Shop shop;
@@ -109,9 +114,7 @@ public class DatabaseController implements JDBCredentials {
 			ResultSet rs = pStat.executeQuery();
 			if (rs.next()) {
 				int currentQuantity = rs.getInt("itemQuantity");
-				if(currentQuantity-Integer.parseInt(quantity) < 40) {
-					
-				}
+				checkNewOrder(currentQuantity, quantity);
 			}
 			pStat.close();
 		} catch (SQLException e) {
@@ -122,26 +125,42 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
+	private void checkNewOrder(int currentQuantity, String quantity) {
+		int quantityToOrder = currentQuantity -  Integer.parseInt(quantity);
+		if(quantityToOrder < 40) {
+			OrderLine orderLine = shop.createNewOrder(quantityToOrder);
+			createNewOrderLineInDatabase(orderLine);
+		}
+	}
+	private synchronized void createNewOrderLineInDatabase(OrderLine orderline) {
+		try {
+			String query = "INSERT INTO orderline (orderDate, orderlineID, orderlineItemDescription, orderlineQuantity, orderlineSupplier) values (?,?,?,?,?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			//pStat.setInt(1, Date);
+			//pStat.setString(2, nextIDAvailable);
+			pStat.setString(3, orderline.getItem().getToolName());
+			pStat.setInt(4, orderline.getQuantity());
+			pStat.setString(5, orderline.getItem().getSupplier().getCompanyName());
+			int rowCount = pStat.executeUpdate();
+			System.out.println("row Count = " + rowCount);
+			pStat.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public ArrayList<Item> search(String search) {
 		try {
 
-			String query = "SELECT * FROM item WHERE itemName LIKE '%(?)%'";
+			String query = "SELECT * FROM item WHERE itemName LIKE (?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setString(1, search);
+			pStat.setString(1, "%" + search + "%");
 			ArrayList<Item> itemList = new ArrayList<Item>();
-			int itemID;
-			String itemName;
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
+			Item newItem;
 			ResultSet rs = pStat.executeQuery();
 			while (rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName = rs.getString("itemName");
-				itemPrice = rs.getDouble("itemPrice");
-				itemSupplierID = rs.getInt("itemSupplierID");
-				itemQuantity = rs.getInt("itemQuantity");
-				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
 				getSupplierForItem(newItem);
 				itemList.add(newItem);
 			}
@@ -230,6 +249,10 @@ public class DatabaseController implements JDBCredentials {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public void getOrdersFromDatabase() {
 
 	}
 
@@ -377,11 +400,9 @@ public class DatabaseController implements JDBCredentials {
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		if (databaseController.isAdmin("joe", "customer")) {
-			System.out.println("valid admin");
-		} else {
-			System.out.println("NO");
+		ArrayList<Item> list = databaseController.search("its");
+		for (Item e : list) {
+			System.out.println(e);
 		}
-
 	}
 }
