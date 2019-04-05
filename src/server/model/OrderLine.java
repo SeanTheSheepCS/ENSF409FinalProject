@@ -27,7 +27,7 @@ public class OrderLine
         this.itemToOrder = itemToOrder;
         this.quantityToOrder = quantityToOrder;
     }
-    
+    public Item getItem() {return itemToOrder;}
     /**
      * returns a string representation of the order line
      * 
@@ -41,4 +41,7 @@ public class OrderLine
         result = result.concat("Supplier:         " + itemToOrder.getSupplier().getCompanyName() + "\n");
         return result;
     }
+	public int getQuantity() {
+		return quantityToOrder;
+	}
 }
