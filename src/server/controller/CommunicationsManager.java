@@ -8,6 +8,16 @@ import java.util.ArrayList;
 
 import common.model.Item;
 
+/*
+ * BUGS/FEATURES to fix/finish:
+ * Check if sending an Array of Items through socket is possible. that way it'll be faster. 
+ * Search function - search multiple words -> 2^n complexity. 
+ * Split interpretMessageFromClient() into multiple functions, that way it'll be much nicer and cleaner. 
+ * add a supplier
+ * add a item
+ * see all orders
+ * see all orders for a date
+ */
 /**
  * CommunicationsManager manages communications through a socket, it sends
  * strings and serializable items through to the other side.
@@ -25,10 +35,6 @@ public class CommunicationsManager implements Runnable {
 	 * -objectToSocket
 	 * 
 	 * -objectFromSocket
-	 * 
-	 * -stringToSocket
-	 * 
-	 * -stringFromSocket
 	 * 
 	 * boolean isStopped is used as a signal to terminate the thread.
 	 * 
@@ -128,18 +134,27 @@ public class CommunicationsManager implements Runnable {
 			case "LOGOUT":
 				break;
 			case "SEARCH":
-				String[] queryInfo = parseNQuery(words, Integer.MAX_VALUE);
-				//for (int j = 0; j < queryInfo.length; j++) {
-					//String query = queryInfo[j];
-				String query = queryInfo[1];
+				String[] queryInfo = parseNQuery(words, 3);
+				if (queryInfo.length <= 1) {
+					getAllItems();
+					break;
+				} else {
+					// for (int j = 0; j < queryInfo.length; j++) {
+					// String query = queryInfo[j];
+					String query = queryInfo[1];
 					ArrayList<Item> itemList = databaseControl.search(query);
+					if (itemList == null) {
+						sendItem(null);
+						break;
+					}
 					for (int i = 0; i < itemList.size() - 1; i++) {
 						sendMessageToClient("TASKINPROGRESS");
 						sendItem(itemList.get(i));
 					}
 					sendMessageToClient("TASKCOMPLETE");
 					sendItem(itemList.get(itemList.size() - 1));
-				//}
+					// }
+				}
 				break;
 			case "REQUESTITEMINFO":
 				String[] idInfo = parseNQuery(words, 2);
@@ -200,6 +215,34 @@ public class CommunicationsManager implements Runnable {
 			e1.printStackTrace();
 		}
 	}
+	/**
+	 * getAllItems gets every item in database and sends 1 at a time to client. 
+	 */
+	private void getAllItems() {
+		try {
+			ArrayList<Item> allItems = databaseControl.getAllItems();
+
+			for (int i = 0; i < allItems.size() - 1; i++) {
+				sendMessageToClient("TASKINPROGRESS");
+				sendItem(allItems.get(i));
+
+				System.out.print((String) objectFromSocket.readObject());
+			}
+			System.out.println("SENTALLITEMS\n");
+			sendMessageToClient("TASKCOMPLETE");
+			sendItem(allItems.get(allItems.size() - 1));
+
+		} catch (NullPointerException e) {
+			sendMessageToClient("TASKCOMPLETE");
+			sendItem(null);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * closes all IO streams.
@@ -221,18 +264,20 @@ public class CommunicationsManager implements Runnable {
 	 * @return String[] that doesn't contain empty strings of max size n.
 	 */
 	private String[] parseNQuery(String[] original, int n) {
-		String[] parse = new String[n];
-		int counter = 0;
+		ArrayList<String> parse = new ArrayList<String>();
 		for (int i = 0; i < original.length; i++) {
 			if (original[i] != "") {
-				parse[counter] = original[i];
-				counter++;
-				if (counter >= n) {
+				parse.add(original[i]);
+				if (parse.size() >= n) {
 					break;
 				}
 			}
 		}
-		return parse;
+		String[] finalized = new String[parse.size()];
+		for (int i = 0; i < parse.size(); i++) {
+			finalized[i] = parse.get(i);
+		}
+		return finalized;
 	}
 
 	/**

@@ -1,5 +1,11 @@
 package server.controller;
-
+/**
+ * Interface that stores info needed to connect to the tooshopitem database. 
+ * 
+ * @author: Jean-David Rousseau
+ * @version 1.0
+ * @since April 2nd 2019
+ */
 public interface JDBCredentials {
 	static final String HOSTNAME= "127.0.0.1";;
 	static final String PORT= "3306";

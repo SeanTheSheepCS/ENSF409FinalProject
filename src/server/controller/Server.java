@@ -7,7 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 /*
  * BUGS/FEATURES to fix/finish:
- * IP Address Server initialization
+ * IP Address Server initialization - automatically configures to IP. 
+ * Split into 2 branches in git. 
  */
 
 /**
@@ -54,7 +55,7 @@ public class Server {
 			System.err.println("Create new socket error");
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Interner Server is running");
+		System.out.println("Internet Server is running");
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.188.143");
+		Server server = new Server(9898, 5, "10.13.154.138");
 		server.startCommunications();
 	}
 

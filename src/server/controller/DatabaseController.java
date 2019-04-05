@@ -18,18 +18,39 @@ import server.model.OrderLine;
 import server.model.Shop;
 
 /*
+ * BUGS/FEATURES to fix/finish:
  * ErrorChecking -> more
  * Close Streams properly
+ * decreaseItemQuantity needs to reduce item quantity in SQL
+ * createNewOrderline needs completion
+ * change getInfo,getAllItems to be 1 line to initialize item instead of 6.
+ * get orders from database.  
+ * 
+ */
+/**
+ * DatabaseController connects to a database and asks/receives information from
+ * that database.
+ * 
+ * @author: Jean-David Rousseau
+ * @version 1.0
+ * @since March 30th 2019
  */
 public class DatabaseController implements JDBCredentials {
 	private Connection connectionToDatabase;
 	private Shop shop;
 
+	/**
+	 * c-tor declares a shop (to be used in buy/decrease quantity functionality).
+	 * initializes connection to SQL database.
+	 */
 	public DatabaseController() {
 		declareShop();
 		initializeConnection();
 	}
 
+	/**
+	 * initializes connection to SQL database using JDBCredentials.
+	 */
 	public void initializeConnection() {
 		try {
 			String url = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE;
@@ -42,16 +63,20 @@ public class DatabaseController implements JDBCredentials {
 	}
 
 	/*
-	 * admin - admin joe - customer bob - hunter2
+	 * User/PW to test admin - admin
+	 * 
+	 * joe - customer
+	 * 
+	 * bob - hunter2
 	 */
 	/**
+	 * isValidLogin determines if username/pw combo exists in the SQL database.
 	 * 
-	 * @param username
-	 * @param password
-	 * @return
+	 * @param username of user
+	 * @param password of user
+	 * @return true if correct un/pw combo.
 	 */
 	public boolean isValidLogin(String username, String password) {
-//Fix for leaks
 		try {
 			String query = "SELECT * FROM users WHERE username =(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
@@ -77,6 +102,14 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
+	/**
+	 * isAdmin determines if username/password is a correct combo as well as
+	 * checking if it has admin priviledges.
+	 * 
+	 * @param username of user
+	 * @param password of user.
+	 * @return true if un/pw combo is correct and user is admin.
+	 */
 	public boolean isAdmin(String username, String password) {
 		try {
 			if (isValidLogin(username, password)) {
@@ -106,6 +139,12 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
+	/**
+	 * in dev
+	 * 
+	 * @param itemId
+	 * @param quantity
+	 */
 	public void decreaseItemQuantity(String itemId, String quantity) {
 		try {
 			String query = "SELECT * FROM item WHERE itemID=(?)";
@@ -125,19 +164,31 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
+	/**
+	 * in dev
+	 * 
+	 * @param currentQuantity
+	 * @param quantity
+	 */
 	private void checkNewOrder(int currentQuantity, String quantity) {
-		int quantityToOrder = currentQuantity -  Integer.parseInt(quantity);
-		if(quantityToOrder < 40) {
+		int quantityToOrder = currentQuantity - Integer.parseInt(quantity);
+		if (quantityToOrder < 40) {
 			OrderLine orderLine = shop.createNewOrder(quantityToOrder);
 			createNewOrderLineInDatabase(orderLine);
 		}
 	}
+
+	/**
+	 * in dev
+	 * 
+	 * @param orderline
+	 */
 	private synchronized void createNewOrderLineInDatabase(OrderLine orderline) {
 		try {
 			String query = "INSERT INTO orderline (orderDate, orderlineID, orderlineItemDescription, orderlineQuantity, orderlineSupplier) values (?,?,?,?,?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			//pStat.setInt(1, Date);
-			//pStat.setString(2, nextIDAvailable);
+			// pStat.setInt(1, Date);
+			// pStat.setString(2, nextIDAvailable);
 			pStat.setString(3, orderline.getItem().getToolName());
 			pStat.setInt(4, orderline.getQuantity());
 			pStat.setString(5, orderline.getItem().getSupplier().getCompanyName());
@@ -149,6 +200,14 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	/**
+	 * search finds every item in which the itemname contains the search string
+	 * somewhere in it.
+	 * 
+	 * @param search is string to be found in item names
+	 * @return an arraylist of all items in the database that contain correct search
+	 *         parameter. if its empty it returns null.
+	 */
 	public ArrayList<Item> search(String search) {
 		try {
 
@@ -165,6 +224,9 @@ public class DatabaseController implements JDBCredentials {
 				itemList.add(newItem);
 			}
 			pStat.close();
+			if (itemList.isEmpty()) {
+				return null;
+			}
 			return itemList;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -172,6 +234,12 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	/**
+	 * finds an item based on id.
+	 * 
+	 * @param id of item.
+	 * @return item if exists, else null.
+	 */
 	public Item getInfo(String id) {
 		try {
 			String query = "SELECT * FROM item WHERE itemID=(?)";
@@ -202,6 +270,10 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	/**
+	 * getAllItems gets every item in database. 
+	 * @return Arraylist of items in database. 
+	 */
 	public ArrayList<Item> getAllItems() {
 
 		try {
@@ -231,7 +303,10 @@ public class DatabaseController implements JDBCredentials {
 			return null;
 		}
 	}
-
+/**
+ * sets supplier for item provided. 
+ * @param item is item to set supplier on. 
+ */
 	private void getSupplierForItem(Item item) {
 
 		try {
@@ -251,11 +326,15 @@ public class DatabaseController implements JDBCredentials {
 		}
 
 	}
-
+/**
+ * in dev
+ */
 	public void getOrdersFromDatabase() {
 
 	}
-
+/**
+ * closes connection to database. 
+ */
 	private void closeConnection() {
 		try {
 			connectionToDatabase.close();
@@ -265,7 +344,9 @@ public class DatabaseController implements JDBCredentials {
 		}
 
 	}
-
+/**
+ * declares a new shop for field. 
+ */
 	private void declareShop() {
 		// NOTE: add implementation for database
 		ArrayList<Item> itemList = new ArrayList<Item>();
@@ -274,7 +355,14 @@ public class DatabaseController implements JDBCredentials {
 		shop = new Shop(inventory, supplierList);
 
 	}
-
+	
+	
+	
+	
+	
+/**
+ * reads items.txt and sends it off to be added to database. 
+ */
 	protected void readItemFileAndSend() {
 
 		BufferedReader reader;
@@ -319,7 +407,13 @@ public class DatabaseController implements JDBCredentials {
 			closeConnection();
 		}
 	}
-
+/**
+ * inserts a supplier into supplier database. ID must be unique. 
+ * @param supplierID of supplier
+ * @param companyName of supplier
+ * @param address of supplier
+ * @param salesContact of supplier
+ */
 	private synchronized void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
 			String salesContact) {
 		try {
@@ -336,7 +430,9 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 		}
 	}
-
+/**
+ * reads suppliers.txt and sends it off to be added to database. 
+ */
 	protected void readSupplierFileAndSend() {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader("suppliers.txt"));
@@ -378,7 +474,14 @@ public class DatabaseController implements JDBCredentials {
 			closeConnection();
 		}
 	}
-
+/**
+ * inserts an item into database, ID must be unique. 
+ * @param itemID of item
+ * @param itemName of item
+ * @param itemPrice of item
+ * @param itemSupplierID of item
+ * @param itemQuantity of item
+ */
 	private synchronized void insertItemPreparedStatement(int itemID, String itemName, double itemPrice,
 			int itemSupplierID, int itemQuantity) {
 		try {
@@ -396,7 +499,9 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 		}
 	}
-
+/*
+ * Testing
+ */
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
