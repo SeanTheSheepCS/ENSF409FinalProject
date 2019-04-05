@@ -31,7 +31,7 @@ import server.model.Shop;
  * DatabaseController connects to a database and asks/receives information from
  * that database.
  * 
- * @author: Jean-David Rousseau
+ * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
  * @since March 30th 2019
  */

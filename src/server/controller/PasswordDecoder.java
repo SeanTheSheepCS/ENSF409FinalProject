@@ -7,7 +7,7 @@ package server.controller;
  * Password Decoder is a class (future interface) that is meant to decode a
  * password and check if it i the same and the true password.
  * 
- * @author: Jean-David Rousseau
+ * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
  * @since April 2nd 2019
  */

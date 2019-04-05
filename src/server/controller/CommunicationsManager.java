@@ -22,7 +22,7 @@ import common.model.Item;
  * CommunicationsManager manages communications through a socket, it sends
  * strings and serializable items through to the other side.
  * 
- * @author: Jean-David Rousseau
+ * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
  * @since March 30th 2019
  */

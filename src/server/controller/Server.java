@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 /**
  * Server is simple socket server that starts a CommunicationsManager/Client
  * 
- * @author: Jean-David Rousseau
+ * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
  * @since March 30th 2019
  */

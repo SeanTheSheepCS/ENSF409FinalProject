@@ -2,7 +2,7 @@ package server.controller;
 /**
  * Interface that stores info needed to connect to the tooshopitem database. 
  * 
- * @author: Jean-David Rousseau
+ * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
  * @since April 2nd 2019
  */
