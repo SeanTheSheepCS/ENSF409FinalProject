@@ -117,6 +117,7 @@ public class Client
     {
         try
         {
+            clearEntries();
             comsManager.sendMessage("SEARCH" + " " + searchTerm);
             getSequenceOfItems();
         }
@@ -208,6 +209,7 @@ public class Client
     {
         try
         {
+            clearEntries();
             ArrayList<Item>listOfSentItems = comsManager.readSequenceOfItems();
             for(Item sentItem : listOfSentItems)
             {
@@ -225,6 +227,12 @@ public class Client
         }
     }
     
+    public void clearEntries()
+    {
+        theFrame.clearListings();
+        idsOfItemsOnDisplay.clear();
+    }
+    
     public void endSession()
     {
         theFrame.setVisible(false);
@@ -238,6 +246,11 @@ public class Client
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         comsManager.setUpConnection(serverName, portNumber);
+    }
+    
+    public void endConnection()
+    {
+        
     }
     
     public int idAtIndex(int index)

@@ -39,6 +39,7 @@ public class GUI extends JFrame
     protected JButton searchButton;
     protected JButton loginButton;
     protected JButton connectButton;
+    protected JButton disconnectButton;
     
     protected JTextField usernameField;
     protected JPasswordField passwordField;
@@ -107,6 +108,7 @@ public class GUI extends JFrame
         searchButton = new JButton("Search");
         loginButton = new JButton("Login");
         connectButton = new JButton("Connect");
+        disconnectButton = new JButton("Disconnect");
         connectButton.setHorizontalAlignment(SwingConstants.CENTER);
         
         stringDataOnDisplay = new DefaultListModel<String>();
@@ -139,6 +141,21 @@ public class GUI extends JFrame
         centrePanel.add(paneForData);
         
         southPanel.add(connectButton);
+    }
+    
+    public void enterConnectedState()
+    {
+        
+    }
+    
+    public void exitConnectedState()
+    {
+        
+    }
+    
+    public void clearListings()
+    {
+        stringDataOnDisplay.clear();
     }
     
     public void addListingToDisplay(String itemAsString)

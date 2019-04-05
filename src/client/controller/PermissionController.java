@@ -35,7 +35,7 @@ public final class PermissionController
         user.endSession();
         OwnerGUI ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
         ownerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, ownerFrame));
-        Owner ownerUser = new Owner(ownerFrame);
+        ownerUser = new Owner(ownerFrame);
         ownerUser.startSession();
     }
     
@@ -48,7 +48,7 @@ public final class PermissionController
         user.endSession();
         CustomerGUI customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
         customerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user, customerFrame));
-        Customer customerUser = new Customer(customerFrame);
+        customerUser = new Customer(customerFrame);
         customerUser.startSession();
     }
     

@@ -38,6 +38,13 @@ public class CommunicationManager
         objectToSocket = new ObjectOutputStream(socket.getOutputStream());
     }
     
+    public void endConnection() throws IOException
+    {
+        objectFromSocket.close();
+        objectToSocket.close();
+        socket.close();
+    }
+    
     public Item readItem() throws IOException, ClassNotFoundException
     {
         return (Item) readObject();
