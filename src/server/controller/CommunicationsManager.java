@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import common.model.Item;
+import common.model.OrderLine;
 
 /*
  * BUGS/FEATURES to fix/finish:
@@ -100,6 +101,8 @@ public class CommunicationsManager implements Runnable {
 	 * 
 	 * *DECQUANTITY -> decreases quantity of 1 item in database, nothing sent.
 	 * 
+	 * *GETORDERS -> sends all orders in database
+	 * 
 	 * *QUIT -> sends QUIT and stops thread.
 	 * 
 	 * * ->does nothing if empty.
@@ -137,7 +140,7 @@ public class CommunicationsManager implements Runnable {
 				queries.add(queryInfo[1]);
 				if (queryInfo.length > 2) {
 					queries.add(queryInfo[2]);
-					if(queryInfo.length > 2) {
+					if (queryInfo.length > 2) {
 						queries.add(queryInfo[3]);
 					}
 				}
@@ -168,6 +171,8 @@ public class CommunicationsManager implements Runnable {
 				String quantity = itemInfo[2];
 				databaseControl.decreaseItemQuantity(itemId, quantity);
 				break;
+			case "GETORDERS":
+				getAllOrders();
 			case "QUIT":
 				isStopped = true;
 				break;
@@ -182,6 +187,28 @@ public class CommunicationsManager implements Runnable {
 			e1.printStackTrace();
 		}
 	}
+
+	private void getAllOrders() {
+		try {
+			ArrayList<OrderLine> allOrders = databaseControl.getOrdersFromDatabase();
+
+			for (int i = 0; i < allOrders.size() - 1; i++) {
+				sendMessageToClient("TASKINPROGRESS");
+				sendOrderLine(allOrders.get(i));
+			}
+			objectFromSocket.readObject();
+			sendMessageToClient("TASKCOMPLETE");
+			sendOrderLine(allOrders.get(allOrders.size() - 1));
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
 
 	private void checkAndSendForCredentials(String username, String password) {
 		if (databaseControl.isValidLogin(username, password)) {
@@ -221,9 +248,8 @@ public class CommunicationsManager implements Runnable {
 				sendMessageToClient("TASKINPROGRESS");
 				sendItem(allItems.get(i));
 
-				System.out.print((String) objectFromSocket.readObject());
+				objectFromSocket.readObject();
 			}
-			System.out.println("SENTALLITEMS\n");
 			sendMessageToClient("TASKCOMPLETE");
 			sendItem(allItems.get(allItems.size() - 1));
 
@@ -290,7 +316,17 @@ public class CommunicationsManager implements Runnable {
 			System.err.println("Failed to send Item in communicationsManager");
 		}
 	}
+	private void sendOrderLine(OrderLine orderLine) {
+		try {
+			objectToSocket.writeObject(orderLine);
+			objectToSocket.reset();
+			objectToSocket.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Failed to send Orderline in communicationsManager");
+		}
 
+	}
 	/**
 	 * sends string to socket.
 	 * 

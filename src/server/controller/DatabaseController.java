@@ -12,10 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import common.model.Item;
-import common.model.Supplier;
-import server.model.Inventory;
-import server.model.OrderLine;
-import server.model.Shop;
+import common.model.OrderLine;
 
 /*
  * BUGS/FEATURES to fix/finish:
@@ -37,14 +34,13 @@ import server.model.Shop;
  */
 public class DatabaseController implements JDBCredentials {
 	private Connection connectionToDatabase;
-	private Shop shop;
 
 	/**
 	 * c-tor declares a shop (to be used in buy/decrease quantity functionality).
 	 * initializes connection to SQL database.
 	 */
 	public DatabaseController() {
-		declareShop();
+
 		initializeConnection();
 	}
 
@@ -153,7 +149,17 @@ public class DatabaseController implements JDBCredentials {
 			ResultSet rs = pStat.executeQuery();
 			if (rs.next()) {
 				int currentQuantity = rs.getInt("itemQuantity");
-				checkNewOrder(currentQuantity, quantity);
+				if (new OrderLine(Integer.parseInt(itemId), Integer.parseInt(quantity), currentQuantity).needsOrder()) {
+					Item item = new Item(Integer.parseInt(itemId), rs.getString("itemName"), rs.getInt("itemQuantity"),
+							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+					getSupplierForItem(item);
+					OrderLine orderline = new OrderLine(item,50 - (currentQuantity - Integer.parseInt(quantity)));
+					updateDatabaseQuantity(itemId, 50);
+					createNewOrderLineInDatabase(orderline);
+				} else {
+					updateDatabaseQuantity(itemId, currentQuantity - Integer.parseInt(quantity));
+				}
+
 			}
 			pStat.close();
 		} catch (SQLException e) {
@@ -164,17 +170,17 @@ public class DatabaseController implements JDBCredentials {
 
 	}
 
-	/**
-	 * in dev
-	 * 
-	 * @param currentQuantity
-	 * @param quantity
-	 */
-	private void checkNewOrder(int currentQuantity, String quantity) {
-		int quantityToOrder = currentQuantity - Integer.parseInt(quantity);
-		if (quantityToOrder < 40) {
-			OrderLine orderLine = shop.createNewOrder(quantityToOrder);
-			createNewOrderLineInDatabase(orderLine);
+	private void updateDatabaseQuantity(String itemId, int newQuantity) {
+		try {
+			String statement = "UPDATE item SET itemQuantity = (?) WHERE itemID = (?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+			pStat.setInt(1, newQuantity);
+			pStat.setInt(2, Integer.parseInt(itemId));
+			pStat.executeUpdate();
+			pStat.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -185,17 +191,19 @@ public class DatabaseController implements JDBCredentials {
 	 */
 	private synchronized void createNewOrderLineInDatabase(OrderLine orderline) {
 		try {
-			String query = "INSERT INTO orderline (orderDate, orderlineID, orderlineItemDescription, orderlineQuantity, orderlineSupplier) values (?,?,?,?,?)";
+			String query = "INSERT INTO orderline (orderlineDate, orderlineItemDescription, orderlineQuantity, orderlineSupplier) values (?,?,?,?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			// pStat.setInt(1, Date);
-			// pStat.setString(2, nextIDAvailable);
-			pStat.setString(3, orderline.getItem().getToolName());
-			pStat.setInt(4, orderline.getQuantity());
-			pStat.setString(5, orderline.getItem().getSupplier().getCompanyName());
-			int rowCount = pStat.executeUpdate();
-			System.out.println("row Count = " + rowCount);
+
+			pStat.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
+
+			pStat.setString(2, orderline.getItem().getToolName());
+			pStat.setInt(3, orderline.getQuantity());
+			pStat.setString(4, orderline.getItem().getSupplier().getCompanyName());
+			pStat.executeUpdate();
 			pStat.close();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 	}
@@ -223,11 +231,11 @@ public class DatabaseController implements JDBCredentials {
 			for (int i = 1; i < queries.size(); i++) {
 				statement += " OR itemName LIKE (?)";
 			}
-			
+
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
 
 			for (int i = 0; i < queries.size(); i++) {
-				pStat.setString(i+1, "%" + queries.get(i) + "%");
+				pStat.setString(i + 1, "%" + queries.get(i) + "%");
 			}
 
 			ResultSet rs = pStat.executeQuery();
@@ -270,12 +278,12 @@ public class DatabaseController implements JDBCredentials {
 			for (int i = 1; i < queries.size(); i++) {
 				statement += " AND itemName LIKE (?)";
 			}
-			
+
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
 
 			for (int i = 0; i < queries.size(); i++) {
-				pStat.setString(i+1, "%" + queries.get(i) + "%");
-				
+				pStat.setString(i + 1, "%" + queries.get(i) + "%");
+
 			}
 
 			ArrayList<Item> itemList = new ArrayList<Item>();
@@ -306,19 +314,10 @@ public class DatabaseController implements JDBCredentials {
 			String query = "SELECT * FROM item WHERE itemID=(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
 			pStat.setInt(1, Integer.parseInt(id));
-			int itemID;
-			String itemName;
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
 			ResultSet rs = pStat.executeQuery();
 			if (rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName = rs.getString("itemName");
-				itemPrice = rs.getDouble("itemPrice");
-				itemSupplierID = rs.getInt("itemSupplierID");
-				itemQuantity = rs.getInt("itemQuantity");
-				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
 				getSupplierForItem(newItem);
 				pStat.close();
 				return newItem;
@@ -342,19 +341,10 @@ public class DatabaseController implements JDBCredentials {
 			String query = "SELECT * FROM item";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
 			ArrayList<Item> itemList = new ArrayList<Item>();
-			int itemID;
-			String itemName;
-			double itemPrice;
-			int itemSupplierID;
-			int itemQuantity;
 			ResultSet rs = pStat.executeQuery();
 			while (rs.next()) {
-				itemID = rs.getInt("itemID");
-				itemName = rs.getString("itemName");
-				itemPrice = rs.getDouble("itemPrice");
-				itemSupplierID = rs.getInt("itemSupplierID");
-				itemQuantity = rs.getInt("itemQuantity");
-				Item newItem = new Item(itemID, itemName, itemQuantity, itemPrice, itemSupplierID);
+				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
 				getSupplierForItem(newItem);
 				itemList.add(newItem);
 			}
@@ -394,8 +384,23 @@ public class DatabaseController implements JDBCredentials {
 	/**
 	 * in dev
 	 */
-	public void getOrdersFromDatabase() {
-
+	public ArrayList<OrderLine> getOrdersFromDatabase() {
+		try {
+			String query = "SELECT * FROM orderline";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			ArrayList<OrderLine> orderList = new ArrayList<OrderLine>();
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				OrderLine orderline = new OrderLine(rs.getDate("orderlineDate"), rs.getString("orderlineSupplier"),
+						rs.getInt("orderlineQuantity"), rs.getString("orderlineItemDescription"));
+				orderList.add(orderline);
+			}
+			pStat.close();
+			return orderList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -414,63 +419,34 @@ public class DatabaseController implements JDBCredentials {
 	/**
 	 * declares a new shop for field.
 	 */
-	private void declareShop() {
-		// NOTE: add implementation for database
-		ArrayList<Item> itemList = new ArrayList<Item>();
-		ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
-		Inventory inventory = new Inventory(itemList);
-		shop = new Shop(inventory, supplierList);
 
-	}
-
-	/**
-	 * reads items.txt and sends it off to be added to database.
+	/*
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 */
-	protected void readItemFileAndSend() {
-
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader("items.txt"));
-			try {
-				String line;
-				while (true) {
-
-					line = reader.readLine();
-
-					String[] tokens = line.split(";");
-					int id = Integer.parseInt(tokens[0]);
-					String name = tokens[1];
-					int quantity = Integer.parseInt(tokens[2]);
-					double price = Double.parseDouble(tokens[3]);
-					int supplierId = Integer.parseInt(tokens[4]);
-					// INSERT NEEDS ID,name,Price,SupplierID,Quantity
-					insertItemPreparedStatement(id, name, price, supplierId, quantity);
-				}
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NullPointerException e) {
-				System.out.println("EndofFile");
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		} catch (FileNotFoundException e1) {
-
-			e1.printStackTrace();
-		} finally {
-			closeConnection();
-		}
-	}
-
 	/**
 	 * inserts a supplier into supplier database. ID must be unique.
 	 * 
@@ -568,20 +544,60 @@ public class DatabaseController implements JDBCredentials {
 		}
 	}
 
+	/**
+	 * reads items.txt and sends it off to be added to database.
+	 */
+	protected void readItemFileAndSend() {
+
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader("items.txt"));
+			try {
+				String line;
+				while (true) {
+
+					line = reader.readLine();
+
+					String[] tokens = line.split(";");
+					int id = Integer.parseInt(tokens[0]);
+					String name = tokens[1];
+					int quantity = Integer.parseInt(tokens[2]);
+					double price = Double.parseDouble(tokens[3]);
+					int supplierId = Integer.parseInt(tokens[4]);
+					// INSERT NEEDS ID,name,Price,SupplierID,Quantity
+					insertItemPreparedStatement(id, name, price, supplierId, quantity);
+				}
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				System.out.println("EndofFile");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		} catch (FileNotFoundException e1) {
+
+			e1.printStackTrace();
+		} finally {
+			closeConnection();
+		}
+	}
+
 	/*
 	 * Testing
 	 */
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		ArrayList<String> yo = new ArrayList<String>();
-		yo.add("its");
-		yo.add("a");
-		ArrayList<Item> list = databaseController.search(yo);
-		if (list != null) {
-			for (Item e : list) {
-				System.out.println(e);
-			}
-		}
+		databaseController.decreaseItemQuantity("1000", "25");
 	}
 }
