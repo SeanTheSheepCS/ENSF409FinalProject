@@ -100,7 +100,9 @@ public class CommunicationsManager implements Runnable {
 	 * 
 	 * *DECQUANTITY -> decreases quantity of 1 item in database, nothing sent.
 	 * 
-	 * *QUIT -> sends QUIT and stops thread. * ->does nothing if empty.
+	 * *QUIT -> stops thread.
+	 * 
+	 * * ->does nothing if empty.
 	 * 
 	 * When sending multiple objects it sends TASKINPROGRESS, folllowed by item
 	 * until last one where it sends TASKCOMPLETE then last item.
@@ -120,16 +122,7 @@ public class CommunicationsManager implements Runnable {
 				}
 				String username = userInfo[1];
 				String password = userInfo[2];
-
-				if (databaseControl.isValidLogin(username, password)) {
-					if (databaseControl.isAdmin(username, password)) {
-						sendMessageToClient("ADMIN");
-					} else {
-						sendMessageToClient("CUSTOMER");
-					}
-				} else {
-					sendMessageToClient("INVALID");
-				}
+				checkAndSendForCredentials(username, password);
 				break;
 			case "LOGOUT":
 				break;
@@ -138,23 +131,11 @@ public class CommunicationsManager implements Runnable {
 				if (queryInfo.length <= 1) {
 					getAllItems();
 					break;
-				} else {
-					// for (int j = 0; j < queryInfo.length; j++) {
-					// String query = queryInfo[j];
-					String query = queryInfo[1];
-					ArrayList<Item> itemList = databaseControl.search(query);
-					if (itemList == null) {
-						sendItem(null);
-						break;
-					}
-					for (int i = 0; i < itemList.size() - 1; i++) {
-						sendMessageToClient("TASKINPROGRESS");
-						sendItem(itemList.get(i));
-					}
-					sendMessageToClient("TASKCOMPLETE");
-					sendItem(itemList.get(itemList.size() - 1));
-					// }
 				}
+				ArrayList<String> queries = new ArrayList<String>();
+				queries.add(queryInfo[1]);
+				queries.add(queryInfo[2]);
+				searchAndSend(queries);
 				break;
 			case "REQUESTITEMINFO":
 				String[] idInfo = parseNQuery(words, 2);
@@ -169,26 +150,7 @@ public class CommunicationsManager implements Runnable {
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
-				try {
-					ArrayList<Item> allItems = databaseControl.getAllItems();
-
-					for (int i = 0; i < allItems.size() - 1; i++) {
-						sendMessageToClient("TASKINPROGRESS");
-						sendItem(allItems.get(i));
-
-						System.out.print((String) objectFromSocket.readObject());
-					}
-					System.out.println("SENTALLITEMS\n");
-					sendMessageToClient("TASKCOMPLETE");
-					sendItem(allItems.get(allItems.size() - 1));
-
-				} catch (NullPointerException e) {
-					sendMessageToClient("TASKCOMPLETE");
-					sendItem(null);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				getAllItems();
 				break;
 			case "DECQUANTITY":
 				String[] itemInfo = parseNQuery(words, 3);
@@ -201,7 +163,6 @@ public class CommunicationsManager implements Runnable {
 				databaseControl.decreaseItemQuantity(itemId, quantity);
 				break;
 			case "QUIT":
-				sendMessageToClient("QUIT");
 				isStopped = true;
 				break;
 			default:
@@ -215,8 +176,36 @@ public class CommunicationsManager implements Runnable {
 			e1.printStackTrace();
 		}
 	}
+
+	private void searchAndSend(ArrayList<String> queries) {
+		ArrayList<Item> itemList = databaseControl.search(queries);
+		if (itemList == null) {
+			sendItem(null);
+		} else {
+			for (int i = 0; i < itemList.size() - 1; i++) {
+				sendMessageToClient("TASKINPROGRESS");
+				sendItem(itemList.get(i));
+			}
+			sendMessageToClient("TASKCOMPLETE");
+			sendItem(itemList.get(itemList.size() - 1));
+		}
+	}
+
+	private void checkAndSendForCredentials(String username, String password) {
+		if (databaseControl.isValidLogin(username, password)) {
+			if (databaseControl.isAdmin(username, password)) {
+				sendMessageToClient("ADMIN");
+			} else {
+				sendMessageToClient("CUSTOMER");
+			}
+		} else {
+			sendMessageToClient("INVALID");
+		}
+
+	}
+
 	/**
-	 * getAllItems gets every item in database and sends 1 at a time to client. 
+	 * getAllItems gets every item in database and sends 1 at a time to client.
 	 */
 	private void getAllItems() {
 		try {
