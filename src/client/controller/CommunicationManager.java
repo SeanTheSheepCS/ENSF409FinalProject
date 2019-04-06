@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import common.model.Item;
 
 /**
@@ -26,6 +24,8 @@ public class CommunicationManager
     private ObjectInputStream objectFromSocket;
     /** objects will be sent to the server through this stream */
     private ObjectOutputStream objectToSocket;
+    /** true if the coms manager is connected to the server, false otherwise */
+    private boolean isConnected;
     
     /**
      * all values in the cManager are set to null
@@ -35,6 +35,7 @@ public class CommunicationManager
         socket = null;
         objectFromSocket = null;
         objectToSocket = null;
+        isConnected = false;
     }
     
     /**
@@ -49,6 +50,7 @@ public class CommunicationManager
         socket = new Socket(serverName, portNumber);
         objectFromSocket = new ObjectInputStream(socket.getInputStream());
         objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+        isConnected = true;
     }
     
     /**
@@ -61,6 +63,7 @@ public class CommunicationManager
         objectFromSocket.close();
         objectToSocket.close();
         socket.close();
+        isConnected = false;
     }
     
     /**
@@ -189,5 +192,15 @@ public class CommunicationManager
         sendMessage("LOGIN" + " " + username + " " + password);
         String messageFromServer = readString();
         return messageFromServer;
+    }
+    
+    /**
+     * returns true if you are connected to a socket, false otherwise
+     * 
+     * @return true if you are connected to a socket, false otherwise
+     */
+    public boolean isConnected()
+    {
+        return isConnected;
     }
 }

@@ -21,12 +21,12 @@ import client.toolinfopane.controller.DecreaseQuantityButtonListener;
  */
 public class ToolInfoPaneGUI extends JDialog
 {
-    /** the Client that should ask for tool info */
-    private Client user;
     /** the GUI that this JDialog should be a child of */
     private GUI parent;
     /** the info of the tool */
     private String toolInfo;
+    /** the ID of the tool on display */
+    private int toolIDOfItemOnDisplay;
     
     private JLabel infoLabel;
     private JButton buyButton;
@@ -43,15 +43,15 @@ public class ToolInfoPaneGUI extends JDialog
      * @param toolInfo the info of the tool that should be displayed
      * @param toolID the ID of the tool that should be displayed
      */
-    public ToolInfoPaneGUI(Client user, GUI parent, String toolInfo, int toolID)
+    public ToolInfoPaneGUI(Client user, GUI parent, String toolInfo, int toolIDOfItemOnDisplay)
     {
         super(parent, "Tool Info");
-        this.user = user;
         this.parent = parent;
         this.toolInfo = toolInfo;
+        this.toolIDOfItemOnDisplay = toolIDOfItemOnDisplay;
         initializeComponents();
         addToPanels();
-        prepareListeners();
+        prepareListeners(user);
         prepareWindow();
     }
     
@@ -88,10 +88,10 @@ public class ToolInfoPaneGUI extends JDialog
     /**
      * prepares the listeners for the buy button and decrease quantity button
      */
-    private void prepareListeners()
+    private void prepareListeners(Client user)
     {
-        buyButton.addActionListener(new BuyButtonListener(this));
-        decreaseQuantityButton.addActionListener(new DecreaseQuantityButtonListener(this));
+        buyButton.addActionListener(new BuyButtonListener(user,this));
+        decreaseQuantityButton.addActionListener(new DecreaseQuantityButtonListener(user,this));
     }
     
     /**
@@ -107,13 +107,8 @@ public class ToolInfoPaneGUI extends JDialog
         setVisible(true);
     }
     
-    public void sendBuyMessage()
+    public int getToolIDOfItemOnDisplay()
     {
-        
-    }
-    
-    public void sendDecreaseQuantityMessage()
-    {
-        
+        return toolIDOfItemOnDisplay;
     }
 }

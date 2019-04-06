@@ -1,19 +1,12 @@
 package client.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import common.model.Item;
 import client.view.GUI;
+import common.model.Item;
 
 /**
  * The Client class for the tool shop application
@@ -66,6 +59,32 @@ public class Client
             theFrame = frame;
             pControl = new PermissionController(this,theFrame);
             comsManager = new CommunicationManager();
+            prepareListeners();
+        }
+        catch(Exception e)
+        {
+            System.out.println("An unexpected error occurred while initializing the client.");
+        }
+    }
+    
+    /**
+     * For use by classes that extend client such as customer and owner, generates a client with a given frame and connection already in place
+     * 
+     * @param frame the frame to initalize this client with
+     * @param comsManager the CommunicationManager that this client is assigned to
+     */
+    protected Client(GUI frame, CommunicationManager comsManager)
+    {
+        try
+        {
+            idsOfItemsOnDisplay = new ArrayList<Integer>();
+            theFrame = frame;
+            pControl = new PermissionController(this,theFrame);
+            this.comsManager = comsManager;
+            if(comsManager.isConnected())
+            {
+                manageGetAllToolsRequest();
+            }
             prepareListeners();
         }
         catch(Exception e)
@@ -210,6 +229,35 @@ public class Client
     }
     
     /**
+     * manages a request to decrease the quantity of a given tool, returns whether it was successful since errors produced by this function should be managed elsewhere
+     * 
+     * @param idOfToolToDecreaseQuantityOf the ID of the item we want to decrease the quantity of
+     * @param quantityToDecreaseBy how much the quantity should be decreased by
+     * @return true if nothing went wrong, false otherwise
+     */
+    public boolean manageDecreaseQuantityRequest(int idOfToolToDecreaseQuantityOf, int quantityToDecreaseBy)
+    {
+        try
+        {
+            comsManager.sendMessage("DECQUANTITY " + idOfToolToDecreaseQuantityOf + " " + quantityToDecreaseBy);
+            return true;
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get all tools...");
+            return false;
+        }
+        catch(IOException ioe)
+        {
+            return false;
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+    }
+    
+    /**
      * requests info for an item with a specific ID
      * 
      * @param specifiedID the ID of the tool we want info of
@@ -313,7 +361,14 @@ public class Client
      */
     public void endConnection()
     {
-        //TODO: Implementation
+        try
+        {
+            comsManager.endConnection();
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(theFrame, "Failed to end the connection with the server.");
+        }
     }
     
     public GUI getFrame()
@@ -330,6 +385,26 @@ public class Client
     public int idAtIndex(int index)
     {
         return idsOfItemsOnDisplay.get(index);
+    }
+    
+    /**
+     * returns true if the client is connected, false otherwise
+     * 
+     * @return true if the client is connected, false otherwise
+     */
+    public boolean isConnected()
+    {
+        return comsManager.isConnected();
+    }
+    
+    /**
+     * returns the comsManager for this user
+     * 
+     * @return the comsManager for this user
+     */
+    public CommunicationManager getComsManager()
+    {
+        return comsManager;
     }
     
     public static void main(String[] args)

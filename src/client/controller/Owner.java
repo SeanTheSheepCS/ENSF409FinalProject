@@ -22,9 +22,9 @@ public final class Owner extends Client
      * 
      * @param frame the OwnerGUI that this owner will use
      */
-    public Owner(OwnerGUI frame)
+    public Owner(OwnerGUI frame, CommunicationManager cManager)
     {
-        super(frame);
+        super(frame, cManager);
     }
     
     public String requestItemInfo(int specifiedID)

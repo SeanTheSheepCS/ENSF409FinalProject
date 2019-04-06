@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
-import client.view.GUI;
+import client.controller.Client;
 import client.toolinfopane.view.ToolInfoPaneGUI;
 
 /**
@@ -17,6 +17,8 @@ import client.toolinfopane.view.ToolInfoPaneGUI;
  */
 public class BuyButtonListener implements ActionListener
 {
+    /** the user that will buy the item*/
+    Client user;
     /** the ToolPaneInfoGUI whose buy button this is monitoring */
     ToolInfoPaneGUI parent;
     
@@ -25,8 +27,9 @@ public class BuyButtonListener implements ActionListener
      * 
      * @param parent the ToolPaneInfoGUI whose buy button this is monitoring
      */
-    public BuyButtonListener(ToolInfoPaneGUI parent)
+    public BuyButtonListener(Client user, ToolInfoPaneGUI parent)
     {
+        this.user = user;
         this.parent = parent;
     }
 
@@ -36,11 +39,19 @@ public class BuyButtonListener implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-        String numberToBuyAsString = JOptionPane.showInputDialog(parent, "Buy button pressed!");
+        String numberToBuyAsString = JOptionPane.showInputDialog(parent, "How many would you like to buy?");
         try
         {
             int quantityToBuy = Integer.parseInt(numberToBuyAsString);
-            
+            boolean wasSuccessful = user.manageDecreaseQuantityRequest(parent.getToolIDOfItemOnDisplay(), quantityToBuy);
+            if(wasSuccessful)
+            {
+                JOptionPane.showMessageDialog(parent, "Successfully bought item! (Disclaimer: This is a school project, no actual items will be sent, if you want to actually send us money that is up to you)");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(parent, "Failed to buy the item. Try again later...");
+            }
         }
         catch(NumberFormatException nfe)
         {

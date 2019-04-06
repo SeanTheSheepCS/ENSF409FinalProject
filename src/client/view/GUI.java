@@ -164,6 +164,22 @@ public class GUI extends JFrame
     }
     
     /**
+     * empties the entered username for when you log out
+     */
+    public void clearUsernameField()
+    {
+        usernameField.setText("");
+    }
+    
+    /**
+     * empties the entered password for when you log out
+     */
+    public void clearPasswordField()
+    {
+        passwordField.setText("");
+    }
+    
+    /**
      * IN PROGRESS
      */
     public void enterConnectedState()

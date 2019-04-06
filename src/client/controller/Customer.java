@@ -17,8 +17,8 @@ public final class Customer extends Client
      * 
      * @param frame the customer GUI this customer should use
      */
-    public Customer(CustomerGUI frame)
+    public Customer(CustomerGUI frame, CommunicationManager comsManager)
     {
-        super(frame);
+        super(frame, comsManager);
     }
 }
