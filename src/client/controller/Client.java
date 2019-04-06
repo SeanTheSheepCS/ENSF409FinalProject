@@ -47,30 +47,9 @@ public class Client
     }
     
     /**
-     * For use by classes that extend client such as customer and owner, generates a client with a given frame.
-     * 
-     * @param frame the frame to initalize this client with
-     */
-    protected Client(GUI frame)
-    {
-        try
-        {
-            idsOfItemsOnDisplay = new ArrayList<Integer>();
-            theFrame = frame;
-            pControl = new PermissionController(this,theFrame);
-            comsManager = new CommunicationManager();
-            prepareListeners();
-        }
-        catch(Exception e)
-        {
-            System.out.println("An unexpected error occurred while initializing the client.");
-        }
-    }
-    
-    /**
      * For use by classes that extend client such as customer and owner, generates a client with a given frame and connection already in place
      * 
-     * @param frame the frame to initalize this client with
+     * @param frame the frame to initialize this client with
      * @param comsManager the CommunicationManager that this client is assigned to
      */
     protected Client(GUI frame, CommunicationManager comsManager)
@@ -84,6 +63,11 @@ public class Client
             if(comsManager.isConnected())
             {
                 manageGetAllToolsRequest();
+                theFrame.enterConnectedState();
+            }
+            else
+            {
+                theFrame.exitConnectedState();
             }
             prepareListeners();
         }
@@ -99,15 +83,17 @@ public class Client
      * -search button listener
      * -connect button listener
      * -list selection listener
+     * -disconnect button listener
      */
     private void prepareListeners()
     {
         try
         {
-            theFrame.getLoginButton().addActionListener(new LoginButtonListener(this,theFrame));
-            theFrame.getSearchButton().addActionListener(new SearchButtonListener(this,theFrame));
-            theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this,theFrame));
-            theFrame.getList().addListSelectionListener(new ListListener(this, theFrame, theFrame.getList()));
+            theFrame.getLoginButton().addActionListener(new LoginButtonListener(this));
+            theFrame.getSearchButton().addActionListener(new SearchButtonListener(this));
+            theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this));
+            theFrame.getDisconnectButton().addActionListener(new DisconnectButtonListener(this));
+            theFrame.getList().addListSelectionListener(new ListListener(this, theFrame.getList()));
         }
         catch(NullPointerException npe)
         {
@@ -269,7 +255,7 @@ public class Client
             Item desiredItem = comsManager.readItemInfo(specifiedID);
             if(desiredItem != null)
             {
-                return desiredItem.toString();
+                return desiredItem.toStringWithoutIDOrDetailedSupplierInfo();
             }
             else
             {
@@ -296,6 +282,8 @@ public class Client
     
     /**
      * reads a sequence of items from the server read through the comsManager
+     * 
+     * @throws IOException
      */
     private void getSequenceOfItems() throws IOException
     {
@@ -354,6 +342,7 @@ public class Client
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         comsManager.setUpConnection(serverName, portNumber);
+        theFrame.enterConnectedState();
     }
     
     /**
@@ -364,6 +353,7 @@ public class Client
         try
         {
             comsManager.endConnection();
+            theFrame.exitConnectedState();
         }
         catch(Exception e)
         {

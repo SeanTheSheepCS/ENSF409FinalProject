@@ -29,20 +29,8 @@ public class LoggedInUserGUI extends GUI
     {
         super(title);
         this.username = username;
-        removeLoginCapabilities();
+        super.removeLoginCapabilities();
         addLogoutCapabilities();
-    }
-    
-    /**
-     * removes login capabilities from the frame, necessary since we inherited from a class that did have login capabilities
-     */
-    private void removeLoginCapabilities()
-    {
-        super.northOptionsPanel.remove(usernameField);
-        super.northOptionsPanel.remove(passwordField);
-        super.northOptionsPanel.remove(loginButton);
-        super.northOptionsPanel.remove(searchField);
-        super.northOptionsPanel.remove(searchButton);
     }
     
     /**

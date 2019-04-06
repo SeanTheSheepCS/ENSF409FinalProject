@@ -19,19 +19,15 @@ final class ConnectButtonListener implements ActionListener
 {
     /** the user that the connection should be set up with */
     private Client user;
-    /** the GUI that should change if the connection was successful */
-    private GUI frame;
     
     /**
      * generate a connect button listener with a given client to connect and a GUI that should change if the connection is successful
      * 
      * @param user the user that the connection should be set up with
-     * @param frame the GUI that should change if the connection is successful
      */
-    public ConnectButtonListener(Client user, GUI frame) 
+    public ConnectButtonListener(Client user) 
     {
         this.user = user;
-        this.frame = frame;
     }
 
     /**
@@ -44,28 +40,28 @@ final class ConnectButtonListener implements ActionListener
     {
         try
         {
-            frame.setCursorToWaitState();
+            user.getFrame().setCursorToWaitState();
             //GET THE IP AND SUCH!
             String ipToConnectTo = JOptionPane.showInputDialog("Please enter the IP you want to connect to.");
             user.setUpConnection(ipToConnectTo,9898);
-            JOptionPane.showMessageDialog(frame, "Connection successfully made!");
+            JOptionPane.showMessageDialog(user.getFrame(), "Connection successfully made!");
             user.manageGetAllToolsRequest();
         }
         catch(IOException ioe)
         {
-            JOptionPane.showMessageDialog(frame, "Unable to connect to the server. Make sure your server is currently running.");
+            JOptionPane.showMessageDialog(user.getFrame(), "Unable to connect to the server. Make sure your server is currently running.");
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before logging in.");
+            JOptionPane.showMessageDialog(user.getFrame(), "Please wait for the window to be loaded completely before logging in.");
         }
         catch(Exception ex)
         {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while connecting. Try restarting the program.");
+            JOptionPane.showMessageDialog(user.getFrame(), "An unexpected error occurred while connecting. Try restarting the program.");
         }
         finally
         {
-            frame.setCursorToScrewdriver();
+            user.getFrame().setCursorToScrewdriver();
         }
     }
 

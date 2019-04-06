@@ -18,19 +18,15 @@ public final class SearchButtonListener implements ActionListener
 {
     /** the Client that will search for an item */
     private Client user;
-    /** the frame that will be changed as a result of this search */
-    private GUI frame;
     
     /**
      * Creates a searchButtonListener with a given Client and GUI
      * 
      * @param user the Client that will search for an item
-     * @param frame the frame that will be changed as a result of this search
      */
-    public SearchButtonListener(Client user, GUI frame) 
+    public SearchButtonListener(Client user) 
     {
         this.user = user;
-        this.frame = frame;
     }
 
     /**
@@ -43,15 +39,15 @@ public final class SearchButtonListener implements ActionListener
     {
         try
         {
-            user.manageSearchRequest(frame.getSearchTerm());
+            user.manageSearchRequest(user.getFrame().getSearchTerm());
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before searching.");
+            JOptionPane.showMessageDialog(user.getFrame(), "Please wait for the window to be loaded completely before searching.");
         }
         catch(Exception ex)
         {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while searching. Try restarting the program.");
+            JOptionPane.showMessageDialog(user.getFrame(), "An unexpected error occurred while searching. Try restarting the program.");
         }
     }
 

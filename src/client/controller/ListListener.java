@@ -21,21 +21,17 @@ class ListListener implements ListSelectionListener
     private Client user;
     /** the listArea that was clicked */
     private JList<String> listArea;
-    /** the frame that the popup should be associated with */
-    private GUI frame;
     
     /**
      * creates a ListListener attached with the given elements
      * 
      * @param user the user that this client will use to get IDs associated with indices
-     * @param frame the frame that the popup should be associated with
      * @param listArea the listArea that was clicked 
      */
-    public ListListener(Client user, GUI frame, JList<String> listArea)
+    public ListListener(Client user, JList<String> listArea)
     {
         this.user = user;
         this.listArea = listArea;
-        this.frame = frame;
     }
 
     /**
@@ -55,7 +51,7 @@ class ListListener implements ListSelectionListener
                 String toolInfo = user.requestItemInfo(toolID);
                 if(toolInfo != null)
                 {
-                    ToolInfoPaneGUI infoPane = new ToolInfoPaneGUI(user, frame, toolInfo,toolID);
+                    ToolInfoPaneGUI infoPane = new ToolInfoPaneGUI(user, user.getFrame(), toolInfo,toolID);
                 }
             }
         }

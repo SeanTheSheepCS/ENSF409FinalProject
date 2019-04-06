@@ -18,8 +18,6 @@ public class LogoutButtonListener implements ActionListener
 {
     /** the Client this logout button should log out */
     private Client user;
-    /** the frame the logout should modify */
-    private GUI frame;
     
     /**
      * generate a logout button listener with a given user that it should log out and frame that it should modify
@@ -27,10 +25,9 @@ public class LogoutButtonListener implements ActionListener
      * @param user the Client that should be logged out if the button is pressed
      * @param frame the GUI that should be modified if the button is pressed
      */
-    public LogoutButtonListener(Client user, GUI frame)
+    public LogoutButtonListener(Client user)
     {
         this.user = user;
-        this.frame = frame;
     }
     
     /**
@@ -47,11 +44,11 @@ public class LogoutButtonListener implements ActionListener
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before logging in.");
+            JOptionPane.showMessageDialog(user.getFrame(), "Please wait for the window to be loaded completely before logging in.");
         }
         catch(Exception ex)
         {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while logging in. Try restarting the program.");
+            JOptionPane.showMessageDialog(user.getFrame(), "An unexpected error occurred while logging in. Try restarting the program.");
         }
     } 
 }

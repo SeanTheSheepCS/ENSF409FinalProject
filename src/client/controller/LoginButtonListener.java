@@ -18,8 +18,6 @@ public final class LoginButtonListener implements ActionListener
 {
     /** the user that the login will modify */
     private Client user;
-    /** the GUI that a successful login will modify */
-    private GUI frame;
     
     /**
      * Creates a login button listener with the given elements 
@@ -27,10 +25,9 @@ public final class LoginButtonListener implements ActionListener
      * @param user the user that the login will modify
      * @param frame the GUI that a successful login will modify
      */
-    public LoginButtonListener(Client user, GUI frame) 
+    public LoginButtonListener(Client user) 
     {
         this.user = user;
-        this.frame = frame;
     }
 
     /**
@@ -43,15 +40,15 @@ public final class LoginButtonListener implements ActionListener
     {
         try
         {
-            user.manageLoginRequest(frame.getUsername(), frame.getPassword());
+            user.manageLoginRequest(user.getFrame().getUsername(), user.getFrame().getPassword());
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(frame, "Please wait for the window to be loaded completely before logging in.");
+            JOptionPane.showMessageDialog(user.getFrame(), "Please wait for the window to be loaded completely before logging in.");
         }
         catch(Exception ex)
         {
-            JOptionPane.showMessageDialog(frame, "An unexpected error occurred while logging in. Try restarting the program.");
+            JOptionPane.showMessageDialog(user.getFrame(), "An unexpected error occurred while logging in. Try restarting the program.");
         }
     }
 

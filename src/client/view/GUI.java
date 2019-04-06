@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -79,7 +80,6 @@ public class GUI extends JFrame
             add("North", northPanel);
             add("Center", centrePanel);
             add("South", southPanel);
-            
             pack();
             setVisible(true);
         }
@@ -125,8 +125,11 @@ public class GUI extends JFrame
         searchButton = new JButton("Search");
         loginButton = new JButton("Login");
         connectButton = new JButton("Connect");
-        disconnectButton = new JButton("Disconnect");
         connectButton.setHorizontalAlignment(SwingConstants.CENTER);
+        connectButton.setEnabled(true);
+        disconnectButton = new JButton("Disconnect");
+        disconnectButton.setHorizontalAlignment(SwingConstants.CENTER);
+        disconnectButton.setEnabled(false);
         
         stringDataOnDisplay = new DefaultListModel<String>();
         dataStorage = new JList<String>(stringDataOnDisplay);
@@ -161,6 +164,7 @@ public class GUI extends JFrame
         centrePanel.add(paneForData);
         
         southPanel.add(connectButton);
+        southPanel.add(disconnectButton);
     }
     
     /**
@@ -180,19 +184,35 @@ public class GUI extends JFrame
     }
     
     /**
-     * IN PROGRESS
+     * Changes the connect button at the bottom to a disconnect button
      */
     public void enterConnectedState()
     {
-        //TODO: Implementation
+        try
+        {
+            disconnectButton.setEnabled(true);
+            connectButton.setEnabled(false);
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(this, "Failed connection.");
+        }
     }
     
     /**
-     * IN PROGRESS
+     * Changes the disconnect button at the bottom to a connect button
      */
     public void exitConnectedState()
     {
-        //TODO: Implementation
+        try
+        {
+            connectButton.setEnabled(false);
+            disconnectButton.setEnabled(true);
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(this, "Failed disconnection.");
+        }
     }
     
     /**
@@ -211,6 +231,18 @@ public class GUI extends JFrame
         stringDataOnDisplay.addElement(itemAsString);
     }
     
+    /**
+     * removes login capabilities from the frame, useful for super-classes that may not want these buttons to be visible
+     */
+    protected void removeLoginCapabilities()
+    {
+        northOptionsPanel.remove(usernameField);
+        northOptionsPanel.remove(passwordField);
+        northOptionsPanel.remove(loginButton);
+        northOptionsPanel.remove(searchField);
+        northOptionsPanel.remove(searchButton);
+    }
+    
     public JButton getSearchButton()
     {
         return searchButton;
@@ -224,6 +256,11 @@ public class GUI extends JFrame
     public JButton getConnectButton()
     {
         return connectButton;
+    }
+    
+    public JButton getDisconnectButton()
+    {
+        return disconnectButton;
     }
     
     public JList<String> getList()
