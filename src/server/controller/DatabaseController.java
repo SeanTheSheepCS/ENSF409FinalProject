@@ -221,22 +221,22 @@ public class DatabaseController implements JDBCredentials {
 				ResultSet rs = pStat.executeQuery();
 				while (rs.next()) {
 					int id = rs.getInt("itemID");
-					for(int i=0;i<itemList.size();i++) {
+					for (int i = 0; i < itemList.size(); i++) {
 						int idToCheck = itemList.get(i).getToolIDNumber();
-						//If it exists in the list already don't add
-						if(id==idToCheck) {
+						// If it exists in the list already don't add
+						if (id == idToCheck) {
 							break;
 						}
-						//If it's smaller than current -> then add in current location
-						else if(id<idToCheck) {
+						// If it's smaller than current -> then add in previous location
+						else if (id < idToCheck) {
 							newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
 									rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
 							getSupplierForItem(newItem);
-							addItemToListInPosition(itemList, newItem, i);
+							itemList.add(i - 1, newItem);
 							break;
 						}
-						//if it doesn't exist in list, add to list
-						else if  (id>idToCheck && i >= itemList.size()-1) {
+						// if it doesn't exist in list, add to list
+						else if (id > idToCheck && i >= itemList.size() - 1) {
 							newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
 									rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
 							getSupplierForItem(newItem);
@@ -245,8 +245,9 @@ public class DatabaseController implements JDBCredentials {
 						}
 					}
 				}
+				pStat.close();
 			}
-			pStat.close();
+
 			if (itemList.isEmpty()) {
 				return null;
 			}
@@ -255,11 +256,6 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	private void addItemToListInPosition(ArrayList<Item> itemList, Item newItem, int i) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private ArrayList<Item> searchForAllKeywords(ArrayList<String> queries) {
@@ -546,9 +542,9 @@ public class DatabaseController implements JDBCredentials {
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		ArrayList<Item> list = databaseController.search("its");
-		for (Item e : list) {
-			System.out.println(e);
-		}
+		//ArrayList<Item> list = databaseController.search("its");
+		//for (Item e : list) {
+		//	System.out.println(e);
+		//}
 	}
 }
