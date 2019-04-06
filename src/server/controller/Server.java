@@ -92,7 +92,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.154.138");
+		Server server = new Server(9898, 5, "10.13.75.100");
 		server.startCommunications();
 	}
 
