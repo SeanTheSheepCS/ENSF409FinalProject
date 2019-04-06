@@ -43,10 +43,10 @@ public class LoggedInUserGUI extends GUI
         logoutButton = new JButton("Logout");
         logoutButton.setPreferredSize(new Dimension(75,10));
         
-        super.northOptionsPanel.add(greeting);
-        super.northOptionsPanel.add(logoutButton);
-        super.northOptionsPanel.add(searchField);
-        super.northOptionsPanel.add(searchButton);
+        super.getNorthOptionsPanel().add(greeting);
+        super.getNorthOptionsPanel().add(logoutButton);
+        super.getNorthOptionsPanel().add(searchField);
+        super.getNorthOptionsPanel().add(searchButton);
     }
     
     public JButton getLogoutButton()

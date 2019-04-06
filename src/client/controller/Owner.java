@@ -22,9 +22,31 @@ public final class Owner extends Client
      * 
      * @param frame the OwnerGUI that this owner will use
      */
-    public Owner(OwnerGUI frame, CommunicationManager cManager)
+    public Owner(OwnerGUI frame, CommunicationManager cManager, PermissionController pControl)
     {
-        super(frame, cManager);
+        super(frame, cManager, pControl);
+        frame.getTheGetAllOrdersButton().addActionListener(new GetOrdersButtonListener(this));
+    }
+    
+    public void manageGetAllOrdersRequest()
+    {
+        try
+        {
+            super.getComsManager().sendMessage("GETORDERS");
+            JOptionPane.showMessageDialog(super.getFrame(),"GETS HERE");
+        }
+        catch(NullPointerException npe)
+        {
+            JOptionPane.showMessageDialog(super.getFrame(), "Please connect to the server before trying to get orders...");
+        }
+        catch(IOException ioe)
+        {
+            JOptionPane.showMessageDialog(super.getFrame(), "An IOException occurred while trying to get orders!");
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(super.getFrame(), "An unexpected error occurred while trying to get all orders!");
+        }
     }
     
     public String requestItemInfo(int specifiedID)

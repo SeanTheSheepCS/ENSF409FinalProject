@@ -1,5 +1,7 @@
 package client.view;
 
+import javax.swing.JButton;
+
 /**
  * The GUI for the owner, displays item IDs
  * 
@@ -10,6 +12,8 @@ package client.view;
  */
 public class OwnerGUI extends LoggedInUserGUI
 {
+    private JButton getAllOrdersButton;
+    
     /**
      * creates an OwnerGUI with a given title and username, the owner has decrease quantity priviledges
      * 
@@ -20,5 +24,23 @@ public class OwnerGUI extends LoggedInUserGUI
     {
         super(title,username);
         super.grantDecreaseQuantityPriviledges();
+        addOrderButton();
     }
+    
+    public void addOrderButton()
+    {
+        getAllOrdersButton = new JButton("Get All Orders");
+        super.getSouthPanel().add(getAllOrdersButton);
+    }
+    
+    public JButton getTheGetAllOrdersButton()
+    {
+        return getAllOrdersButton;
+    }
+    
+    public void displayAllOrders()
+    {
+        
+    }
+    
 }

@@ -51,14 +51,15 @@ public class Client
      * 
      * @param frame the frame to initialize this client with
      * @param comsManager the CommunicationManager that this client is assigned to
+     * @param pControl the permission controller that this client is assigned to
      */
-    protected Client(GUI frame, CommunicationManager comsManager)
+    protected Client(GUI frame, CommunicationManager comsManager, PermissionController pControl)
     {
         try
         {
             idsOfItemsOnDisplay = new ArrayList<Integer>();
             theFrame = frame;
-            pControl = new PermissionController(this,theFrame);
+            this.pControl = pControl;
             this.comsManager = comsManager;
             if(comsManager.isConnected())
             {
@@ -289,6 +290,7 @@ public class Client
     {
         try
         {
+            theFrame.setCursorToWaitState();
             clearEntries();
             ArrayList<Item>listOfSentItems = comsManager.readSequenceOfItems();
             for(Item sentItem : listOfSentItems)
@@ -304,6 +306,10 @@ public class Client
         catch(NullPointerException npe)
         {
             //Null should be sent if the database is empty, so we don't need to do anything!
+        }
+        finally
+        {
+            theFrame.setCursorToScrewdriver();
         }
     }
     
@@ -322,6 +328,14 @@ public class Client
     public void endSession()
     {
         theFrame.setVisible(false);
+        if(comsManager.isConnected() == true)
+        {
+            theFrame.enterConnectedState();
+        }
+        else
+        {
+            theFrame.exitConnectedState();
+        }
     }
     
     /**
@@ -330,6 +344,14 @@ public class Client
     public void startSession()
     {
         theFrame.setVisible(true);
+        if(comsManager.isConnected() == true)
+        {
+            theFrame.enterConnectedState();
+        }
+        else
+        {
+            theFrame.exitConnectedState();
+        }
     }
     
     /**
@@ -352,6 +374,7 @@ public class Client
     {
         try
         {
+            clearData();
             comsManager.endConnection();
             theFrame.exitConnectedState();
         }
@@ -359,6 +382,13 @@ public class Client
         {
             JOptionPane.showMessageDialog(theFrame, "Failed to end the connection with the server.");
         }
+    }
+    
+    private void clearData()
+    {
+        idsOfItemsOnDisplay.clear();
+        theFrame.clearListings();
+        pControl.clearDataOnAllGUIS();
     }
     
     public GUI getFrame()

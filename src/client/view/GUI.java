@@ -46,7 +46,7 @@ public class GUI extends JFrame
     protected JPasswordField passwordField;
     protected JTextField searchField;
     
-    protected JPanel northOptionsPanel;
+    private JPanel northOptionsPanel;
     
     private JPanel northPanel;
     private JPanel centrePanel;
@@ -81,6 +81,7 @@ public class GUI extends JFrame
             add("Center", centrePanel);
             add("South", southPanel);
             pack();
+            exitConnectedState();
             setVisible(true);
         }
         catch(Exception e)
@@ -143,6 +144,7 @@ public class GUI extends JFrame
         centrePanel = new JPanel();
         centrePanel.setBackground(Color.RED);
         southPanel = new JPanel();
+        
     }
     
     /**
@@ -161,10 +163,10 @@ public class GUI extends JFrame
         northPanel.add(header);
         northPanel.add(northOptionsPanel);
         
-        centrePanel.add(paneForData);
-        
         southPanel.add(connectButton);
         southPanel.add(disconnectButton);
+        
+        centrePanel.add(paneForData);
     }
     
     /**
@@ -206,8 +208,9 @@ public class GUI extends JFrame
     {
         try
         {
-            connectButton.setEnabled(false);
-            disconnectButton.setEnabled(true);
+            connectButton.setEnabled(true);
+            disconnectButton.setEnabled(false);
+            stringDataOnDisplay.addElement("Please connect to an IP Address.");
         }
         catch(Exception e)
         {
@@ -281,6 +284,16 @@ public class GUI extends JFrame
     public String getSearchTerm() throws NullPointerException
     {
         return searchField.getText();
+    }
+    
+    public JPanel getNorthOptionsPanel()
+    {
+        return northOptionsPanel;
+    }
+    
+    public JPanel getSouthPanel()
+    {
+        return southPanel;
     }
     
     public boolean hasBuyingPriviledges()

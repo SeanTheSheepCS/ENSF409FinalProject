@@ -34,7 +34,6 @@ public class DisconnectButtonListener implements ActionListener
     public void actionPerformed(ActionEvent e) 
     {
         user.endConnection();
-        user.clearEntries();
     }
     
 }

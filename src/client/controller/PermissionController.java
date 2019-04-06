@@ -47,7 +47,7 @@ public final class PermissionController
         }
         user.endSession();
         OwnerGUI ownerFrame = new OwnerGUI(frame.getTitle(), frame.getUsername());
-        ownerUser = new Owner(ownerFrame, user.getComsManager());
+        ownerUser = new Owner(ownerFrame, user.getComsManager(),this);
         ownerUser.startSession();
         ownerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user));
     }
@@ -63,7 +63,7 @@ public final class PermissionController
         }
         user.endSession();
         CustomerGUI customerFrame = new CustomerGUI(frame.getTitle(), frame.getUsername());
-        customerUser = new Customer(customerFrame, user.getComsManager());
+        customerUser = new Customer(customerFrame, user.getComsManager(),this);
         customerUser.startSession();
         customerFrame.getLogoutButton().addActionListener(new LogoutButtonListener(user));
     }
@@ -84,6 +84,25 @@ public final class PermissionController
         frame.clearUsernameField();
         frame.clearPasswordField();
         user.startSession();
+    }
+    
+    /**
+     * clears the data on every active GUI
+     */
+    public void clearDataOnAllGUIS()
+    {
+        if(user != null)
+        {
+            user.getFrame().clearListings();
+        }
+        if(ownerUser != null)
+        {
+            ownerUser.getFrame().clearListings();
+        }
+        if(customerUser != null)
+        {
+            customerUser.getFrame().clearListings();
+        }
     }
     
     /**
