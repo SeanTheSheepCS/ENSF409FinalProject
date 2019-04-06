@@ -84,8 +84,8 @@ public class DatabaseController implements JDBCredentials {
 			ResultSet rs = pStat.executeQuery();
 			if (rs.next()) {
 				String passwordReceived = rs.getString("password");
-				PasswordDecoder decode = new PasswordDecoder(password, passwordReceived);
-				Boolean isValid = decode.decodePassword();
+				PasswordDecoder decode = new CaesarCypher();
+				Boolean isValid = decode.decodePassword(password, passwordReceived);
 
 				if (isValid) {
 					pStat.close();
@@ -204,24 +204,50 @@ public class DatabaseController implements JDBCredentials {
 	 * search finds every item in which the itemname contains the search string
 	 * somewhere in it.
 	 * 
-	 * @param search is string to be found in item names
+	 * @param queries is string to be found in item names
 	 * @return an arraylist of all items in the database that contain correct search
 	 *         parameter. if its empty it returns null.
 	 */
-	public ArrayList<Item> search(String search) {
-		try {
+	public ArrayList<Item> search(ArrayList<String> queries) {
+		ArrayList<Item> itemList = searchForAllKeywords(queries);
+		itemList = searchForEachKeyword(queries, itemList);
+		if (itemList == null || itemList.isEmpty()) {
+			return null;
+		}
+		return itemList;
+	}
 
-			String query = "SELECT * FROM item WHERE itemName LIKE (?)";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setString(1, "%" + search + "%");
-			ArrayList<Item> itemList = new ArrayList<Item>();
-			Item newItem;
+	private ArrayList<Item> searchForEachKeyword(ArrayList<String> queries, ArrayList<Item> itemList) {
+		try {
+			String statement = "SELECT * FROM item WHERE itemName LIKE (?)";
+			for (int i = 1; i < queries.size(); i++) {
+				statement += " OR itemName LIKE (?)";
+			}
+			
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+
+			for (int i = 0; i < queries.size(); i++) {
+				pStat.setString(i+1, "%" + queries.get(i) + "%");
+			}
+
 			ResultSet rs = pStat.executeQuery();
 			while (rs.next()) {
-				newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
-						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-				getSupplierForItem(newItem);
-				itemList.add(newItem);
+				int id = rs.getInt("itemID");
+				for (int i = 0; i < itemList.size(); i++) {
+					int idToCheck = itemList.get(i).getToolIDNumber();
+					// If it exists in the list already don't add
+					if (id == idToCheck) {
+						break;
+					}
+					// if it doesn't exist in list, add to list
+					else if (id > idToCheck && i >= itemList.size() - 1) {
+						Item newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
+								rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+						getSupplierForItem(newItem);
+						itemList.add(newItem);
+						break;
+					}
+				}
 			}
 			pStat.close();
 			if (itemList.isEmpty()) {
@@ -229,6 +255,41 @@ public class DatabaseController implements JDBCredentials {
 			}
 			return itemList;
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	private ArrayList<Item> searchForAllKeywords(ArrayList<String> queries) {
+
+		try {
+
+			String statement = "SELECT * FROM item WHERE itemName LIKE (?)";
+			for (int i = 1; i < queries.size(); i++) {
+				statement += " AND itemName LIKE (?)";
+			}
+			
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+
+			for (int i = 0; i < queries.size(); i++) {
+				pStat.setString(i+1, "%" + queries.get(i) + "%");
+				
+			}
+
+			ArrayList<Item> itemList = new ArrayList<Item>();
+			ResultSet rs = pStat.executeQuery();
+			while (rs.next()) {
+				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+				getSupplierForItem(newItem);
+				itemList.add(newItem);
+			}
+			pStat.close();
+			return itemList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -271,8 +332,9 @@ public class DatabaseController implements JDBCredentials {
 	}
 
 	/**
-	 * getAllItems gets every item in database. 
-	 * @return Arraylist of items in database. 
+	 * getAllItems gets every item in database.
+	 * 
+	 * @return Arraylist of items in database.
 	 */
 	public ArrayList<Item> getAllItems() {
 
@@ -303,10 +365,12 @@ public class DatabaseController implements JDBCredentials {
 			return null;
 		}
 	}
-/**
- * sets supplier for item provided. 
- * @param item is item to set supplier on. 
- */
+
+	/**
+	 * sets supplier for item provided.
+	 * 
+	 * @param item is item to set supplier on.
+	 */
 	private void getSupplierForItem(Item item) {
 
 		try {
@@ -326,15 +390,17 @@ public class DatabaseController implements JDBCredentials {
 		}
 
 	}
-/**
- * in dev
- */
+
+	/**
+	 * in dev
+	 */
 	public void getOrdersFromDatabase() {
 
 	}
-/**
- * closes connection to database. 
- */
+
+	/**
+	 * closes connection to database.
+	 */
 	private void closeConnection() {
 		try {
 			connectionToDatabase.close();
@@ -344,9 +410,10 @@ public class DatabaseController implements JDBCredentials {
 		}
 
 	}
-/**
- * declares a new shop for field. 
- */
+
+	/**
+	 * declares a new shop for field.
+	 */
 	private void declareShop() {
 		// NOTE: add implementation for database
 		ArrayList<Item> itemList = new ArrayList<Item>();
@@ -355,14 +422,10 @@ public class DatabaseController implements JDBCredentials {
 		shop = new Shop(inventory, supplierList);
 
 	}
-	
-	
-	
-	
-	
-/**
- * reads items.txt and sends it off to be added to database. 
- */
+
+	/**
+	 * reads items.txt and sends it off to be added to database.
+	 */
 	protected void readItemFileAndSend() {
 
 		BufferedReader reader;
@@ -407,13 +470,15 @@ public class DatabaseController implements JDBCredentials {
 			closeConnection();
 		}
 	}
-/**
- * inserts a supplier into supplier database. ID must be unique. 
- * @param supplierID of supplier
- * @param companyName of supplier
- * @param address of supplier
- * @param salesContact of supplier
- */
+
+	/**
+	 * inserts a supplier into supplier database. ID must be unique.
+	 * 
+	 * @param supplierID   of supplier
+	 * @param companyName  of supplier
+	 * @param address      of supplier
+	 * @param salesContact of supplier
+	 */
 	private synchronized void insertSupplierPreparedStatement(int supplierID, String companyName, String address,
 			String salesContact) {
 		try {
@@ -430,9 +495,10 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 		}
 	}
-/**
- * reads suppliers.txt and sends it off to be added to database. 
- */
+
+	/**
+	 * reads suppliers.txt and sends it off to be added to database.
+	 */
 	protected void readSupplierFileAndSend() {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader("suppliers.txt"));
@@ -474,14 +540,16 @@ public class DatabaseController implements JDBCredentials {
 			closeConnection();
 		}
 	}
-/**
- * inserts an item into database, ID must be unique. 
- * @param itemID of item
- * @param itemName of item
- * @param itemPrice of item
- * @param itemSupplierID of item
- * @param itemQuantity of item
- */
+
+	/**
+	 * inserts an item into database, ID must be unique.
+	 * 
+	 * @param itemID         of item
+	 * @param itemName       of item
+	 * @param itemPrice      of item
+	 * @param itemSupplierID of item
+	 * @param itemQuantity   of item
+	 */
 	private synchronized void insertItemPreparedStatement(int itemID, String itemName, double itemPrice,
 			int itemSupplierID, int itemQuantity) {
 		try {
@@ -499,15 +567,21 @@ public class DatabaseController implements JDBCredentials {
 			e.printStackTrace();
 		}
 	}
-/*
- * Testing
- */
+
+	/*
+	 * Testing
+	 */
 	public static void main(String[] args) {
 		DatabaseController databaseController = new DatabaseController();
 		databaseController.initializeConnection();
-		ArrayList<Item> list = databaseController.search("its");
-		for (Item e : list) {
-			System.out.println(e);
+		ArrayList<String> yo = new ArrayList<String>();
+		yo.add("its");
+		yo.add("a");
+		ArrayList<Item> list = databaseController.search(yo);
+		if (list != null) {
+			for (Item e : list) {
+				System.out.println(e);
+			}
 		}
 	}
 }

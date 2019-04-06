@@ -128,14 +128,19 @@ public class CommunicationsManager implements Runnable {
 			case "LOGOUT":
 				break;
 			case "SEARCH":
-				String[] queryInfo = parseNQuery(words, 3);
+				String[] queryInfo = parseNQuery(words, 4);
 				if (queryInfo.length <= 1) {
 					getAllItems();
 					break;
 				}
 				ArrayList<String> queries = new ArrayList<String>();
 				queries.add(queryInfo[1]);
-				queries.add(queryInfo[2]);
+				if (queryInfo.length > 2) {
+					queries.add(queryInfo[2]);
+					if(queryInfo.length > 2) {
+						queries.add(queryInfo[3]);
+					}
+				}
 				searchAndSend(queries);
 				break;
 			case "REQUESTITEMINFO":
