@@ -36,7 +36,15 @@ public class BuyButtonListener implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-        JOptionPane.showMessageDialog(parent, "Buy button pressed!");
-        //TODO: Implementation
+        String numberToBuyAsString = JOptionPane.showInputDialog(parent, "Buy button pressed!");
+        try
+        {
+            int quantityToBuy = Integer.parseInt(numberToBuyAsString);
+            
+        }
+        catch(NumberFormatException nfe)
+        {
+            JOptionPane.showMessageDialog(parent,"Please enter a valid integer.");
+        }
     }
 }

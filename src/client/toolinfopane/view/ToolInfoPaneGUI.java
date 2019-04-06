@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import client.controller.Client;
 import client.view.GUI;
 import client.toolinfopane.controller.BuyButtonListener;
+import client.toolinfopane.controller.DecreaseQuantityButtonListener;
 
 /**
  * The GUI that displays the information of a tool
@@ -90,7 +91,7 @@ public class ToolInfoPaneGUI extends JDialog
     private void prepareListeners()
     {
         buyButton.addActionListener(new BuyButtonListener(this));
-        //TODO: decrease quantity button listener
+        decreaseQuantityButton.addActionListener(new DecreaseQuantityButtonListener(this));
     }
     
     /**
@@ -104,5 +105,15 @@ public class ToolInfoPaneGUI extends JDialog
         setSize(700,200);
         setResizable(false);
         setVisible(true);
+    }
+    
+    public void sendBuyMessage()
+    {
+        
+    }
+    
+    public void sendDecreaseQuantityMessage()
+    {
+        
     }
 }

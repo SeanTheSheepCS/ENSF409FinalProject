@@ -167,6 +167,39 @@ public final class Item implements Serializable
     }
     
     /**
+     * return a string representation of the item without ID or detailed supplier info
+     * 
+     * @return a string representation of the item without ID or detailed supplier info
+     */
+    public String toStringWithoutIDOrDetailedSupplierInfo()
+    {
+        String collection = "";
+        collection = collection.concat("Tool Name:          " + toolName + "\n");
+        
+        if(price != -1)
+        {
+            collection = collection.concat("Price:              " + "$" + price + "\n");
+        }
+        else
+        {
+            collection = collection.concat("Price:              " + "NO_PRICE_PROVIDED" + "\n");
+        }
+        
+        if(supplier != null)
+        {
+            collection = collection.concat("Supplier:           " + supplier.getCompanyName() + "\n");
+        }
+        else
+        {
+            collection = collection.concat("Supplier:           " + "NO_SUPPLIER_PROVIDED" + "\n");
+        }
+        
+        collection = collection.concat("Quantity:           " + quantity + "\n");
+        
+        return collection;
+    }
+    
+    /**
      * returns a string representation of the item
      * 
      * @return a string representation of the item

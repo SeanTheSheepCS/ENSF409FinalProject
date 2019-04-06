@@ -28,7 +28,7 @@ public class Client
     /** An arraylist containing the IDS of the items currenty on display on theFrame */
     private ArrayList<Integer> idsOfItemsOnDisplay;
     /** manages the communication for the client */
-    private CommunicationManager comsManager;
+    protected CommunicationManager comsManager;
     /** the GUI attached to this client */
     private GUI theFrame;
     /** controls logins and logouts for this client */
@@ -314,6 +314,11 @@ public class Client
     public void endConnection()
     {
         //TODO: Implementation
+    }
+    
+    public GUI getFrame()
+    {
+        return theFrame;
     }
     
     /**
