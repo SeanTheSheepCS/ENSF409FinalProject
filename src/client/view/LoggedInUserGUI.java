@@ -14,9 +14,12 @@ import javax.swing.JLabel;
  */
 public class LoggedInUserGUI extends GUI
 {
+    /** displays a greeting at the top of the screen */
     private JLabel greeting;
+    /** a button to log the user out */
     private JButton logoutButton;
     
+    /** the username that this user used to log in */
     private String username;
     
     /**
@@ -45,10 +48,13 @@ public class LoggedInUserGUI extends GUI
         
         super.getNorthOptionsPanel().add(greeting);
         super.getNorthOptionsPanel().add(logoutButton);
-        super.getNorthOptionsPanel().add(searchField);
-        super.getNorthOptionsPanel().add(searchButton);
+        super.getNorthOptionsPanel().add(getSearchField());
+        super.getNorthOptionsPanel().add(getSearchButton());
     }
     
+    /**
+     * returns the logout button for this user
+     */
     public JButton getLogoutButton()
     {
         return logoutButton;

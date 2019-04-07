@@ -107,6 +107,9 @@ public class ToolInfoPaneGUI extends JDialog
         setVisible(true);
     }
     
+    /**
+     * returns the ID of the item on display in this ToolInfoPaneGUI
+     */
     public int getToolIDOfItemOnDisplay()
     {
         return toolIDOfItemOnDisplay;

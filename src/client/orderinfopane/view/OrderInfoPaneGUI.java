@@ -69,9 +69,9 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * initialize the components of the JDialog
+     * Initializes the components of the JDialog
      * 
-     * @throw NullPointerException
+     * @throws NullPointerException
      */
     private void initializeComponents() throws NullPointerException, ArrayIndexOutOfBoundsException
     {
@@ -96,7 +96,7 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * add the components to the right panels
+     * Add the components to the right panels
      */
     private void addToPanels()
     {
@@ -106,7 +106,7 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * prepares the listeners for the arrow buttons
+     * Prepares the listeners for the arrow buttons
      */
     private void prepareListeners(Client user)
     {
@@ -115,7 +115,7 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * makes the pane display the next order
+     * Makes the pane display the next order
      */
     public void advanceOneOrder()
     {
@@ -144,7 +144,7 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * makes the pane display one order back
+     * Makes the pane display one order back
      */
     public void goBackOneOrder()
     {
@@ -173,7 +173,7 @@ public class OrderInfoPaneGUI extends JDialog
     }
     
     /**
-     * prepares the window with a proper size and with the panels put in
+     * Prepares the window with a proper size and with the panels put in
      */
     private void prepareWindow()
     {

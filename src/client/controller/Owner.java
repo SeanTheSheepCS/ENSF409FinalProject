@@ -31,6 +31,9 @@ public final class Owner extends Client
         frame.getTheGetAllOrdersButton().addActionListener(new GetOrdersButtonListener(this));
     }
     
+    /**
+     * Asks the server for all the order lines it has and creates an OrderInfoPaneGUI displaying all of the order lines
+     */
     public void manageGetAllOrdersRequest()
     {
         try
@@ -53,6 +56,12 @@ public final class Owner extends Client
         }
     }
     
+    /**
+     * requests the detailed info of an item with a specified ID
+     * 
+     * @param specifiedID the ID of the item we want the information of
+     * @return a String representation of the item with a detailed description
+     */
     public String requestItemInfo(int specifiedID)
     {
         try

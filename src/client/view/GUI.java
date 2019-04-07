@@ -37,10 +37,10 @@ public class GUI extends JFrame
     private JList<String> dataStorage;
     private JScrollPane paneForData;
     
-    protected JButton searchButton;
-    protected JButton loginButton;
-    protected JButton connectButton;
-    protected JButton disconnectButton;
+    private JButton searchButton;
+    private JButton loginButton;
+    private JButton connectButton;
+    private JButton disconnectButton;
     
     protected JTextField usernameField;
     protected JPasswordField passwordField;
@@ -244,6 +244,11 @@ public class GUI extends JFrame
         northOptionsPanel.remove(loginButton);
         northOptionsPanel.remove(searchField);
         northOptionsPanel.remove(searchButton);
+    }
+    
+    protected JTextField getSearchField()
+    {
+        return searchField;
     }
     
     public JButton getSearchButton()

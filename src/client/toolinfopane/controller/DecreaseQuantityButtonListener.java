@@ -22,12 +22,21 @@ public class DecreaseQuantityButtonListener implements ActionListener
     /** the ToolInfoPaneGUI that the decrease quantity button belongs to */
     ToolInfoPaneGUI parent;
     
+    /**
+     * Generates a DecreaseQuantityButtonListener with a given parent
+     * 
+     * @param parent the ToolPaneInfoGUI whose decrease quantity button this is monitoring
+     */
     public DecreaseQuantityButtonListener(Client user, ToolInfoPaneGUI parent)
     {
         this.user = user;
         this.parent = parent;
     }
     
+    /**
+     * The decrease quantity button was pressed, should send command to server to reduce quantity
+     */
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         String numberToBuyAsString = JOptionPane.showInputDialog(parent, "How much would you like to decrease the quantity by?");

@@ -36,6 +36,15 @@ public final class Item implements Serializable
         quantity = 0;
     }
     
+    /**
+     * creates an Item with specified parameters
+     * 
+     * @param itemID corresponds to data field toolIDNumber
+     * @param itemName corresponds to data field toolName
+     * @param itemQuantity corresponds to data field quantity
+     * @param itemPrice corresponds to data field price
+     * @param itemSupplierID corresponds to a certain supplier
+     */
     public Item(int itemID, String itemName, int itemQuantity, double itemPrice, int itemSupplierID) {
         toolName = itemName;
         toolIDNumber = itemID;

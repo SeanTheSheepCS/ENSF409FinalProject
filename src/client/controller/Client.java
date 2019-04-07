@@ -394,6 +394,9 @@ public class Client
         }
     }
     
+    /**
+     * clears all stored IDs and clears the GUI's scroll pane
+     */
     private void clearData()
     {
         idsOfItemsOnDisplay.clear();
@@ -401,6 +404,11 @@ public class Client
         pControl.clearDataOnAllGUIS();
     }
     
+    /**
+     * get the GUI that is owned by this client
+     * 
+     * @return the GUI owned by this client
+     */
     public GUI getFrame()
     {
         return theFrame;
@@ -437,6 +445,11 @@ public class Client
         return comsManager;
     }
     
+    /**
+     * creates a Client.
+     * 
+     * @param args unused
+     */
     public static void main(String[] args)
     {
         Client user = new Client();

@@ -12,6 +12,7 @@ import javax.swing.JButton;
  */
 public class OwnerGUI extends LoggedInUserGUI
 {
+    /** A button that displays all orders when it is pressed */
     private JButton getAllOrdersButton;
     
     /**
@@ -27,20 +28,20 @@ public class OwnerGUI extends LoggedInUserGUI
         addOrderButton();
     }
     
+    /**
+     * adds the "Get All Orders" button to the GUI
+     */
     public void addOrderButton()
     {
         getAllOrdersButton = new JButton("Get All Orders");
         super.getSouthPanel().add(getAllOrdersButton);
     }
     
+    /**
+     * returns the getAllOrdersButton
+     */
     public JButton getTheGetAllOrdersButton()
     {
         return getAllOrdersButton;
     }
-    
-    public void displayAllOrders()
-    {
-        
-    }
-    
 }

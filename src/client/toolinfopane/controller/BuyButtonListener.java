@@ -17,13 +17,13 @@ import client.toolinfopane.view.ToolInfoPaneGUI;
  */
 public class BuyButtonListener implements ActionListener
 {
-    /** the user that will buy the item*/
+    /** The user that will buy the item*/
     Client user;
-    /** the ToolPaneInfoGUI whose buy button this is monitoring */
+    /** The ToolPaneInfoGUI whose buy button this is monitoring */
     ToolInfoPaneGUI parent;
     
     /**
-     * generates a BuyButtonListener with a given parent
+     * Generates a BuyButtonListener with a given parent
      * 
      * @param parent the ToolPaneInfoGUI whose buy button this is monitoring
      */
@@ -34,7 +34,7 @@ public class BuyButtonListener implements ActionListener
     }
 
     /**
-     * the buy button was pressed, should send command to server to reduce quantity
+     * The buy button was pressed, should send command to server to reduce quantity
      */
     @Override
     public void actionPerformed(ActionEvent e) 
