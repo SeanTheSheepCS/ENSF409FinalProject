@@ -21,7 +21,7 @@ public class CommunicationManager
 {
     /** the socket that this cManager talks with */
     private Socket socket;
-    /** objects will be recieved from the server through this stream */
+    /** objects will be received from the server through this stream */
     private ObjectInputStream objectFromSocket;
     /** objects will be sent to the server through this stream */
     private ObjectOutputStream objectToSocket;
