@@ -13,7 +13,7 @@ import java.io.Serializable;
 public final class Item implements Serializable
 {
 
-	/** The name of the tool */
+    /** The name of the tool */
     private String toolName;
     /** the ID number of the tool */
     private int toolIDNumber;
@@ -37,15 +37,15 @@ public final class Item implements Serializable
     }
     
     public Item(int itemID, String itemName, int itemQuantity, double itemPrice, int itemSupplierID) {
-    	toolName = itemName;
+        toolName = itemName;
         toolIDNumber = itemID;
         price = itemPrice;
         supplier = new Supplier();
         supplier.setSupplierID(itemSupplierID);
         quantity = itemQuantity;
-	}
+    }
 
-	/**
+    /**
      * sets the name of the tool
      * 
      * @param toolName the new name of the tool
