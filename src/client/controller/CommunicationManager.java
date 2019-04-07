@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import common.model.Item;
+import common.model.OrderLine;
 
 /**
  * Manager communication for the client
@@ -48,8 +49,8 @@ public class CommunicationManager
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {
         socket = new Socket(serverName, portNumber);
-        objectFromSocket = new ObjectInputStream(socket.getInputStream());
         objectToSocket = new ObjectOutputStream(socket.getOutputStream());
+        objectFromSocket = new ObjectInputStream(socket.getInputStream());
         isConnected = true;
     }
     
@@ -76,6 +77,30 @@ public class CommunicationManager
     public Item readItem() throws IOException, ClassNotFoundException
     {
         return (Item) readObject();
+    }
+    
+    /**
+     * reads an ArrayList of OrderLines from the server
+     * 
+     * @return an ArrayList of OrderLines read from the server
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public ArrayList<OrderLine> readOrderLines() throws IOException, ClassNotFoundException
+    {
+        return (ArrayList<OrderLine>) readObject();
+    }
+    
+    /**
+     * reads an ArrayList of Items from the server
+     * 
+     * @return an ArrayList of Items read from the server
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public ArrayList<Item> readItemArrayList() throws IOException, ClassNotFoundException
+    {
+        return (ArrayList<Item>) readObject();
     }
     
     /**
@@ -118,39 +143,6 @@ public class CommunicationManager
     public void sendMessage(String message) throws IOException
     {
         objectToSocket.writeObject(message);
-    }
-    
-    /**
-     * reads a sequence of items from the server
-     * 
-     * @return an ArrayList of items containing all the items the server sent
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public ArrayList<Item> readSequenceOfItems() throws IOException, ClassNotFoundException
-    {
-        ArrayList<Item> itemsOnDisplay = new ArrayList<Item>();
-        try
-        {
-            String message = "";
-            do
-            {
-                message = readString();
-                if(message.equals("INVALIDQUERY"))
-                {
-                    break;
-                }
-                Item sentItem = readItem();
-                itemsOnDisplay.add(sentItem);
-                sendMessage("GOTITEM");
-            }while(message.equals("TASKINPROGRESS"));
-            return itemsOnDisplay;
-        }
-        catch(NullPointerException npe)
-        {
-            //Null should be sent if the database is empty, so we don't need to do anything!
-            return itemsOnDisplay;
-        }
     }
     
     /**

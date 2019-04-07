@@ -1,11 +1,14 @@
 package client.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import client.orderinfopane.view.OrderInfoPaneGUI;
 import client.view.OwnerGUI;
 import common.model.Item;
+import common.model.OrderLine;
 
 /**
  * The owner class for the tool shop application
@@ -33,7 +36,8 @@ public final class Owner extends Client
         try
         {
             super.getComsManager().sendMessage("GETORDERS");
-            JOptionPane.showMessageDialog(super.getFrame(),"GETS HERE");
+            ArrayList<OrderLine> allOrders = super.getComsManager().readOrderLines();
+            OrderInfoPaneGUI infoPane = new OrderInfoPaneGUI(this, allOrders);
         }
         catch(NullPointerException npe)
         {
@@ -72,6 +76,7 @@ public final class Owner extends Client
         catch(IOException ioe)
         {
             JOptionPane.showMessageDialog(super.getFrame(), "An IOException occurred while managing a request to get a tool!");
+            ioe.printStackTrace();
             return null;
         }
         catch(Exception e)

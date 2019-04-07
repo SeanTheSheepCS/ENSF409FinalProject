@@ -14,17 +14,17 @@ import java.sql.Date;
 public class OrderLine implements Serializable
 {
     /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    /** the item the order line is to order */
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/** the item the order line is to order */
     private Item itemToOrder;
     /** the quantity of that item to order */
     private int quantityToOrder;
     private boolean needsOrder;
-    private String supplier;
-    private String itemName;
-    private Date date;
+	private String supplier;
+	private String itemName;
+	private Date date;
     /**
      * generates an order line for a certain quantity of the given item
      * @param itemToOrder the item to order
@@ -36,20 +36,20 @@ public class OrderLine implements Serializable
         this.quantityToOrder = quantityToOrder;
     }
     public OrderLine(int parseInt, int quantitySold, int currentQuantity) {
-        if(currentQuantity - quantitySold < 40) {
-            setNeedsOrder(true);
-        }else {
-            setNeedsOrder(false);
-        }
-        
-    }
-    public OrderLine(Date date, String itemName, int quantity, String supplier) {
-        this.date = date;
-        this.itemName=itemName;
-        this.quantityToOrder = quantity;
-        this.supplier = supplier;
-    }
-    public Item getItem() {return itemToOrder;}
+		if(currentQuantity - quantitySold < 40) {
+			setNeedsOrder(true);
+		}else {
+			setNeedsOrder(false);
+		}
+		
+	}
+	public OrderLine(Date date, String itemName, int quantity, String supplier) {
+		this.date = date;
+		this.itemName=itemName;
+		this.quantityToOrder = quantity;
+		this.supplier = supplier;
+	}
+	public Item getItem() {return itemToOrder;}
     /**
      * returns a string representation of the order line
      * 
@@ -64,13 +64,13 @@ public class OrderLine implements Serializable
         result = result.concat("Supplier:         " + supplier + "\n");
         return result;
     }
-    public int getQuantity() {
-        return quantityToOrder;
-    }
-    public boolean needsOrder() {
-        return needsOrder;
-    }
-    public void setNeedsOrder(boolean needsOrder) {
-        this.needsOrder = needsOrder;
-    }
+	public int getQuantity() {
+		return quantityToOrder;
+	}
+	public boolean needsOrder() {
+		return needsOrder;
+	}
+	public void setNeedsOrder(boolean needsOrder) {
+		this.needsOrder = needsOrder;
+	}
 }

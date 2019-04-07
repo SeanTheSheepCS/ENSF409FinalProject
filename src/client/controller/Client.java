@@ -116,6 +116,10 @@ public class Client
     {
         try
         {
+            if(comsManager.isConnected() == false)
+            {
+                throw new NullPointerException("Please connect to server before validating a login...");
+            }
             String loginValidation = comsManager.sendLoginMessageAndReturnServerOutput(username, password);
             if(loginValidation.equals("ADMIN"))
             {
@@ -153,6 +157,10 @@ public class Client
     {
         try
         {
+            if(comsManager.isConnected() == false)
+            {
+                throw new NullPointerException("Please connect to server before searching...");
+            }
             clearEntries();
             comsManager.sendMessage("SEARCH" + " " + searchTerm);
             getSequenceOfItems();
@@ -178,6 +186,10 @@ public class Client
     {
         try
         {
+            if(comsManager.isConnected() == false)
+            {
+                throw new NullPointerException("Please connect to server before trying to logout...");
+            }
             pControl.changePermissionToGuest();
         }
         catch(NullPointerException npe)
@@ -292,7 +304,7 @@ public class Client
         {
             theFrame.setCursorToWaitState();
             clearEntries();
-            ArrayList<Item>listOfSentItems = comsManager.readSequenceOfItems();
+            ArrayList<Item>listOfSentItems = comsManager.readItemArrayList();
             for(Item sentItem : listOfSentItems)
             {
                 idsOfItemsOnDisplay.add(sentItem.getToolIDNumber());
