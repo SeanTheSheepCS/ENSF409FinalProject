@@ -45,7 +45,6 @@ public class Client
             System.out.println("An unexpected error occurred while initializing the client.");
         }
     }
-    
     /**
      * For use by classes that extend client such as customer and owner, generates a client with a given frame and connection already in place
      * 
@@ -90,7 +89,6 @@ public class Client
     {
         try
         {
-            theFrame.getLoginButton().addActionListener(new LoginButtonListener(this));
             theFrame.getSearchButton().addActionListener(new SearchButtonListener(this));
             theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this));
             theFrame.getDisconnectButton().addActionListener(new DisconnectButtonListener(this));
