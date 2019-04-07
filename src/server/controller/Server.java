@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 /*
  * BUGS/FEATURES to fix/finish:
  * IP Address Server initialization - automatically configures to IP. 
- * Split into 2 branches in git. 
+ * DONE Split into 2 branches in git. 
  */
 
 /**
@@ -31,7 +31,7 @@ public class Server {
 	 */
 	public Server() {
 		try {
-			pool = Executors.newFixedThreadPool(5);
+			pool = Executors.newFixedThreadPool(15);
 			serverSocket = new ServerSocket(9898);
 		} catch (IOException e) {
 			System.out.println("\nCreate new socket error");
@@ -92,7 +92,7 @@ public class Server {
 
 	public static void main(String[] args) {
 		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.69.68");
+		Server server = new Server(9898, 5, "10.13.94.63");
 		server.startCommunications();
 	}
 

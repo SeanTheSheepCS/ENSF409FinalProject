@@ -11,13 +11,10 @@ import common.model.OrderLine;
 
 /*
  * BUGS/FEATURES to fix/finish:
- * Check if sending an Array of Items through socket is possible. that way it'll be faster. 
- * Search function - search multiple words -> 2^n complexity. 
- * Split interpretMessageFromClient() into multiple functions, that way it'll be much nicer and cleaner. 
- * add a supplier
- * add a item
- * see all orders
- * see all orders for a date
+ * DONE Check if sending an Array of Items through socket is possible. that way it'll be faster. 
+ * DONE Search function - search multiple words -> 2^n complexity. 
+ * DONE Split interpretMessageFromClient() into multiple functions, that way it'll be much nicer and cleaner. 
+ * DONE see all orders
  */
 /**
  * CommunicationsManager manages communications through a socket, it sends
@@ -77,6 +74,7 @@ public class CommunicationsManager implements Runnable {
 		while (true) {
 			if (isStopped) {
 				closeAllStreams();
+				databaseControl.closeConnection();
 				break;
 			}
 			interpretMessageFromClient();
@@ -106,9 +104,6 @@ public class CommunicationsManager implements Runnable {
 	 * *QUIT -> sends QUIT and stops thread.
 	 * 
 	 * * ->does nothing if empty.
-	 * 
-	 * When sending multiple objects it sends TASKINPROGRESS, folllowed by item
-	 * until last one where it sends TASKCOMPLETE then last item.
 	 */
 	public void interpretMessageFromClient() {
 		try {
@@ -140,7 +135,7 @@ public class CommunicationsManager implements Runnable {
 				queries.add(queryInfo[1]);
 				if (queryInfo.length > 2) {
 					queries.add(queryInfo[2]);
-					if (queryInfo.length > 2) {
+					if (queryInfo.length > 3) {
 						queries.add(queryInfo[3]);
 					}
 				}
@@ -155,7 +150,6 @@ public class CommunicationsManager implements Runnable {
 				String id = idInfo[1];
 				Item item = databaseControl.getInfo(id);
 				sendMessageToClient("SENDINGITEM");
-				System.out.print("ITEMREQUESTSENTTOCLIENT");
 				sendItem(item);
 				break;
 			case "GETALLITEMS":
@@ -189,26 +183,20 @@ public class CommunicationsManager implements Runnable {
 	}
 
 	private void getAllOrders() {
-		try {
-			ArrayList<OrderLine> allOrders = databaseControl.getOrdersFromDatabase();
-
-			for (int i = 0; i < allOrders.size() - 1; i++) {
-				sendMessageToClient("TASKINPROGRESS");
-				sendOrderLine(allOrders.get(i));
-			}
-			objectFromSocket.readObject();
-			sendMessageToClient("TASKCOMPLETE");
-			sendOrderLine(allOrders.get(allOrders.size() - 1));
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ArrayList<OrderLine> allOrders = databaseControl.getOrdersFromDatabase();
+		sendOrderLines(allOrders);
 	}
 
-
+	private void sendOrderLines(ArrayList<OrderLine> allOrders) {
+		try {
+			objectToSocket.writeObject(allOrders);
+			objectToSocket.reset();
+			objectToSocket.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Failed to send Orderline in communicationsManager");
+		}
+	}
 
 	private void checkAndSendForCredentials(String username, String password) {
 		if (databaseControl.isValidLogin(username, password)) {
@@ -225,44 +213,15 @@ public class CommunicationsManager implements Runnable {
 
 	private void searchAndSend(ArrayList<String> queries) {
 		ArrayList<Item> itemList = databaseControl.search(queries);
-		if (itemList == null) {
-			sendItem(null);
-		} else {
-			for (int i = 0; i < itemList.size() - 1; i++) {
-				sendMessageToClient("TASKINPROGRESS");
-				sendItem(itemList.get(i));
-			}
-			sendMessageToClient("TASKCOMPLETE");
-			sendItem(itemList.get(itemList.size() - 1));
-		}
+		sendItems(itemList);
 	}
 
 	/**
 	 * getAllItems gets every item in database and sends 1 at a time to client.
 	 */
 	private void getAllItems() {
-		try {
-			ArrayList<Item> allItems = databaseControl.getAllItems();
-
-			for (int i = 0; i < allItems.size() - 1; i++) {
-				sendMessageToClient("TASKINPROGRESS");
-				sendItem(allItems.get(i));
-
-				objectFromSocket.readObject();
-			}
-			sendMessageToClient("TASKCOMPLETE");
-			sendItem(allItems.get(allItems.size() - 1));
-
-		} catch (NullPointerException e) {
-			sendMessageToClient("TASKCOMPLETE");
-			sendItem(null);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ArrayList<Item> allItems = databaseControl.getAllItems();
+		sendItems(allItems);
 	}
 
 	/**
@@ -316,17 +275,18 @@ public class CommunicationsManager implements Runnable {
 			System.err.println("Failed to send Item in communicationsManager");
 		}
 	}
-	private void sendOrderLine(OrderLine orderLine) {
+
+	private void sendItems(ArrayList<Item> items) {
 		try {
-			objectToSocket.writeObject(orderLine);
+			objectToSocket.writeObject(items);
 			objectToSocket.reset();
 			objectToSocket.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Failed to send Orderline in communicationsManager");
+			System.err.println("Failed to send Item in communicationsManager");
 		}
-
 	}
+
 	/**
 	 * sends string to socket.
 	 * 
