@@ -1,4 +1,4 @@
-package server.controller;
+package server.model;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -32,14 +32,14 @@ import common.model.OrderLine;
  * @version 1.0
  * @since March 30th 2019
  */
-public class DatabaseController implements JDBCredentials {
+public class DatabaseConnector implements JDBCredentials {
 	private Connection connectionToDatabase;
 
 	/**
 	 * c-tor declares a shop (to be used in buy/decrease quantity functionality).
 	 * initializes connection to SQL database.
 	 */
-	public DatabaseController() {
+	public DatabaseConnector() {
 
 		initializeConnection();
 	}

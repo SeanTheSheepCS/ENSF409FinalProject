@@ -1,4 +1,4 @@
-package server.controller;
+package server.model;
 /**
  * Password Decoder is an interface that is meant to decode a
  * password and check if it is the same and the true password.

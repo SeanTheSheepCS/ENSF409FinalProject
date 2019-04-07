@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import common.model.Item;
 import common.model.OrderLine;
+import server.model.DatabaseConnector;
+
 
 /*
  * BUGS/FEATURES to fix/finish:
@@ -42,7 +44,7 @@ public class CommunicationsManager implements Runnable {
 	private ObjectOutputStream objectToSocket;
 	private ObjectInputStream objectFromSocket;
 	private boolean isStopped;
-	private DatabaseController databaseControl;
+	private DatabaseConnector databaseControl;
 	private Socket socket;
 
 	/**
@@ -61,7 +63,7 @@ public class CommunicationsManager implements Runnable {
 	public CommunicationsManager(Socket socket) {
 		this.socket = socket;
 		assignStreams();
-		databaseControl = new DatabaseController();
+		databaseControl = new DatabaseConnector();
 		isStopped = false;
 	}
 
@@ -167,6 +169,7 @@ public class CommunicationsManager implements Runnable {
 				break;
 			case "GETORDERS":
 				getAllOrders();
+				break;
 			case "QUIT":
 				isStopped = true;
 				break;

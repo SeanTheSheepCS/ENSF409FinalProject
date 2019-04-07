@@ -1,4 +1,4 @@
-package server.controller;
+package server.model;
 /**
  * Interface that stores info needed to connect to the tooshopitem database. 
  * 
