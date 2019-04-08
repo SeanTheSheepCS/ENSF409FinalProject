@@ -156,7 +156,7 @@ public class DatabaseConnector implements JDBCredentials {
 
 	private ArrayList<Item> searchForEachKeywordAndIDs(ArrayList<String> queries, ArrayList<Item> itemList) {
 		try {
-			if (itemList.isEmpty()) {
+			if (itemList == null || itemList.isEmpty()) {
 				itemList = new ArrayList<Item>();
 			}
 
@@ -207,6 +207,9 @@ public class DatabaseConnector implements JDBCredentials {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
+		} catch(NullPointerException e) {
+			//System.out.println("Returning Null");
+			return null;
 		}
 
 	}
@@ -240,6 +243,9 @@ public class DatabaseConnector implements JDBCredentials {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
+		}catch(NullPointerException e) {
+			//System.out.println("Returning Null");
 			return null;
 		}
 	}
