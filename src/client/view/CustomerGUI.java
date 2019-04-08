@@ -1,6 +1,6 @@
 package client.view;
 
-public class CustomerGUI extends LoggedInUserGUI
+public final class CustomerGUI extends LoggedInUserGUI
 {
     /**
      * generates a CustomerGUI with buying priviledges

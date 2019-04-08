@@ -12,7 +12,7 @@ import client.orderinfopane.view.OrderInfoPaneGUI;
  * @version 1.0
  * @since April 7th 2019
  */
-public class ForwardArrowButtonListener implements ActionListener 
+public final class ForwardArrowButtonListener implements ActionListener 
 {
     /** the orderInfoPaneGUI that the forward arrow button belongs to */
     OrderInfoPaneGUI parent;

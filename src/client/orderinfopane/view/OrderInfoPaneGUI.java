@@ -22,7 +22,7 @@ import common.model.OrderLine;
  * @version 1.0
  * @since April 7th 2019
  */
-public class OrderInfoPaneGUI extends JDialog
+public final class OrderInfoPaneGUI extends JDialog
 {
     /** the GUI that this JDialog should be a child of */
     private GUI parent;

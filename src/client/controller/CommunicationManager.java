@@ -17,7 +17,7 @@ import common.model.OrderLine;
  * @since April 4th 2019
  *
  */
-public class CommunicationManager 
+final class CommunicationManager 
 {
     /** the socket that this cManager talks with */
     private Socket socket;

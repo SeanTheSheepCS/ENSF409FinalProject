@@ -15,7 +15,7 @@ import client.toolinfopane.view.ToolInfoPaneGUI;
  * @version 1.0
  * @since April 5th 2019
  */
-public class BuyButtonListener implements ActionListener
+public final class BuyButtonListener implements ActionListener
 {
     /** The user that will buy the item*/
     Client user;

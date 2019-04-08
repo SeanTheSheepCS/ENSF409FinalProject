@@ -14,7 +14,7 @@ import client.view.GUI;
  * @version 1.0
  * @since March 31st 2019
  */
-public class LogoutButtonListener implements ActionListener
+final class LogoutButtonListener implements ActionListener
 {
     /** the Client this logout button should log out */
     private Client user;

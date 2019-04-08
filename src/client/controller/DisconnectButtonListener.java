@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
  * @version 1.0
  * @since April 6th 2019
  */
-public class DisconnectButtonListener implements ActionListener
+final class DisconnectButtonListener implements ActionListener
 {
     /** the Client that will be disconnected */
     private Client user;

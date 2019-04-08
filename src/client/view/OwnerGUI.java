@@ -10,7 +10,7 @@ import javax.swing.JButton;
  * @since March 31st 2019
  * 
  */
-public class OwnerGUI extends LoggedInUserGUI
+public final class OwnerGUI extends LoggedInUserGUI
 {
     /** A button that displays all orders when it is pressed */
     private JButton getAllOrdersButton;

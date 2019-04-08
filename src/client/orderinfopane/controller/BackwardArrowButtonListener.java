@@ -12,7 +12,7 @@ import client.orderinfopane.view.OrderInfoPaneGUI;
  * @version 1.0
  * @since April 7th 2019
  */
-public class BackwardArrowButtonListener implements ActionListener 
+public final class BackwardArrowButtonListener implements ActionListener 
 {
     /** the orderInfoPaneGUI that the backward arrow button belongs to */
     OrderInfoPaneGUI parent;

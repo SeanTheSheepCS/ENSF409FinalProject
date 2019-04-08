@@ -14,7 +14,7 @@ import client.view.GUI;
  * @version 1.0
  * @since March 31st 2019
  */
-public final class LoginButtonListener implements ActionListener
+final class LoginButtonListener implements ActionListener
 {
     /** the user that the login will modify */
     private Client user;

@@ -15,7 +15,7 @@ import client.toolinfopane.view.ToolInfoPaneGUI;
  * @version 1.0
  * @since April 6th 2019
  */
-public class DecreaseQuantityButtonListener implements ActionListener
+public final class DecreaseQuantityButtonListener implements ActionListener
 {
     /** the user that will buy the item*/
     Client user;

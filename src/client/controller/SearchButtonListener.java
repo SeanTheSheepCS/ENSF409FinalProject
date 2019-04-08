@@ -14,7 +14,7 @@ import client.view.GUI;
  * @version 1.0
  * @since April 5th 2019
  */
-public final class SearchButtonListener implements ActionListener
+final class SearchButtonListener implements ActionListener
 {
     /** the Client that will search for an item */
     private Client user;

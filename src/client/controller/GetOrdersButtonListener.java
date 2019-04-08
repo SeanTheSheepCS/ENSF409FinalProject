@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
  * @version 1.0
  * @since April 7th 2019
  */
-public class GetOrdersButtonListener implements ActionListener
+final class GetOrdersButtonListener implements ActionListener
 {
     /** the Owner that the orders will be displayed for */
     private Owner parent;

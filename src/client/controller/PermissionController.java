@@ -11,9 +11,9 @@ import client.view.OwnerGUI;
  * 
  * @author Sean Kenny and Jean-David Rousseau
  * @version 1.0
- * @sincne March 30th 2019
+ * @since March 30th 2019
  */
-public final class PermissionController 
+final class PermissionController 
 {
     /** the user that this permission controller belongs to */
     private Client user;

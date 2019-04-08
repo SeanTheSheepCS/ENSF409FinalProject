@@ -1,12 +1,10 @@
 package client.controller;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import client.toolinfopane.view.ToolInfoPaneGUI;
-import client.view.GUI;
 
 /**
  * A listener for when an entry in the list is selected
@@ -15,7 +13,7 @@ import client.view.GUI;
  * @version 1.0
  * @since April 5th 2019
  */
-class ListListener implements ListSelectionListener
+final class ListListener implements ListSelectionListener
 {
     /** the user that this client will use to get IDs associated with indices */
     private Client user;

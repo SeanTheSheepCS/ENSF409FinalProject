@@ -18,7 +18,7 @@ import common.model.OrderLine;
  * @since April 4th 2019
  *
  */
-public final class Owner extends Client
+final class Owner extends Client
 {
     /**
      * creates an Owner with a given OwnerGUI

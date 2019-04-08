@@ -19,7 +19,7 @@ import client.toolinfopane.controller.DecreaseQuantityButtonListener;
  * @version 1.0
  * @since April 5th 2019
  */
-public class ToolInfoPaneGUI extends JDialog
+public final class ToolInfoPaneGUI extends JDialog
 {
     /** the GUI that this JDialog should be a child of */
     private GUI parent;

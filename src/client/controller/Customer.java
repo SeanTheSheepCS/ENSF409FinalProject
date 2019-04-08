@@ -10,7 +10,7 @@ import client.view.CustomerGUI;
  * @since April 4th 2019
  *
  */
-public final class Customer extends Client
+final class Customer extends Client
 {
     /**
      * creates a customer with a given CustomerGUI
