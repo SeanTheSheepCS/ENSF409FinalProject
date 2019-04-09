@@ -44,14 +44,21 @@ public final class DecreaseQuantityButtonListener implements ActionListener
         try
         {
             int quantityToBuy = Integer.parseInt(numberToBuyAsString);
-            boolean wasSuccessful = user.manageDecreaseQuantityRequest(parent.getToolIDOfItemOnDisplay(), quantityToBuy);
-            if(wasSuccessful)
+            if(quantityToBuy <= 0)
             {
-                JOptionPane.showMessageDialog(parent, "Successfully decreased the item's quantity!");
+                JOptionPane.showMessageDialog(parent, "Please enter an integer larger than zero.");
             }
             else
             {
-                JOptionPane.showMessageDialog(parent, "Failed to decrease the items's quantity");
+                boolean wasSuccessful = user.manageDecreaseQuantityRequest(parent.getToolIDOfItemOnDisplay(), quantityToBuy);
+                if(wasSuccessful)
+                {
+                    JOptionPane.showMessageDialog(parent, "Successfully decreased the item's quantity!");
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(parent, "Failed to decrease the items's quantity");
+                }
             }
         }
         catch(NumberFormatException nfe)

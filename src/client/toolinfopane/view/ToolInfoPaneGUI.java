@@ -1,6 +1,8 @@
 package client.toolinfopane.view;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -8,9 +10,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import client.controller.Client;
+import client.controller.Owner;
+import client.orderinfopane.view.OrderInfoPaneGUI;
 import client.view.GUI;
 import client.toolinfopane.controller.BuyButtonListener;
 import client.toolinfopane.controller.DecreaseQuantityButtonListener;
+import client.toolinfopane.controller.RefreshButtonListenerForToolInfoPane;
 
 /**
  * The GUI that displays the information of a tool
@@ -31,7 +36,9 @@ public final class ToolInfoPaneGUI extends JDialog
     private JLabel infoLabel;
     private JButton buyButton;
     private JButton decreaseQuantityButton;
+    private JButton refreshButton;
     
+    private JPanel northPanel;
     private JPanel centrePanel;
     private JPanel southPanel;
     
@@ -64,7 +71,9 @@ public final class ToolInfoPaneGUI extends JDialog
         infoLabel = new JLabel(toolInfoLabelFriendly);
         buyButton = new JButton("Buy");
         decreaseQuantityButton = new JButton("Decrease Quantity");
+        refreshButton = new JButton("🗘");
         
+        northPanel = new JPanel();
         centrePanel = new JPanel();
         southPanel = new JPanel();
     }
@@ -83,6 +92,7 @@ public final class ToolInfoPaneGUI extends JDialog
         {
             southPanel.add(decreaseQuantityButton);
         }
+        northPanel.add(refreshButton);
     }
     
     /**
@@ -92,6 +102,7 @@ public final class ToolInfoPaneGUI extends JDialog
     {
         buyButton.addActionListener(new BuyButtonListener(user,this));
         decreaseQuantityButton.addActionListener(new DecreaseQuantityButtonListener(user,this));
+        refreshButton.addActionListener(new RefreshButtonListenerForToolInfoPane(user,this));
     }
     
     /**
@@ -102,6 +113,7 @@ public final class ToolInfoPaneGUI extends JDialog
         setLayout(new BorderLayout());
         add("Center", centrePanel);
         add("South", southPanel);
+        add("North", northPanel);
         setSize(700,200);
         setResizable(false);
         setVisible(true);
@@ -115,5 +127,17 @@ public final class ToolInfoPaneGUI extends JDialog
     public int getToolIDOfItemOnDisplay()
     {
         return toolIDOfItemOnDisplay;
+    }
+    
+    /**
+     * updates toolInfo with a new String
+     * 
+     * @param updatedToolInfo the new tool info to be displayed in the pane
+     */
+    public void setUpdatedToolInfo(String updatedToolInfo)
+    {
+        toolInfo = updatedToolInfo;
+        String toolInfoLabelFriendly = "<html>" + toolInfo.replaceAll("\n", "<br/>") + "</html>";
+        infoLabel.setText(toolInfoLabelFriendly);
     }
 }

@@ -9,9 +9,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import client.controller.Client;
+import client.controller.Owner;
 import client.orderinfopane.controller.BackwardArrowButtonListener;
 import client.orderinfopane.controller.ForwardArrowButtonListener;
+import client.orderinfopane.controller.RefreshButtonListenerForOrderInfoPane;
 import client.view.GUI;
 import common.model.OrderLine;
 
@@ -35,7 +36,9 @@ public final class OrderInfoPaneGUI extends JDialog
     
     private JButton forwardArrowButton;
     private JButton backwardArrowButton;
+    private JButton refreshButton;
     
+    private JPanel northPanel;
     private JPanel centrePanel;
     private JPanel southPanel;
     
@@ -45,7 +48,7 @@ public final class OrderInfoPaneGUI extends JDialog
      * @param user the user that we can communicate with
      * @param allOrders the order lines that can be displayed by this pane
      */
-    public OrderInfoPaneGUI(Client user, ArrayList<OrderLine> allOrders)
+    public OrderInfoPaneGUI(Owner user, ArrayList<OrderLine> allOrders)
     {
         super(user.getFrame(), "Order Info");
         try
@@ -78,6 +81,7 @@ public final class OrderInfoPaneGUI extends JDialog
         
         forwardArrowButton = new JButton(">");
         backwardArrowButton = new JButton("<");
+        refreshButton = new JButton("🗘");
         
         backwardArrowButton.setEnabled(false);
         if(allOrders.size() > 1)
@@ -90,6 +94,7 @@ public final class OrderInfoPaneGUI extends JDialog
         }
         infoLabel = new JLabel(orderInfoLabelFriendly);
         
+        northPanel = new JPanel();
         centrePanel = new JPanel();
         southPanel = new JPanel();
     }
@@ -99,6 +104,7 @@ public final class OrderInfoPaneGUI extends JDialog
      */
     private void addToPanels()
     {
+        northPanel.add(refreshButton);
         southPanel.add(backwardArrowButton);
         southPanel.add(forwardArrowButton);
         centrePanel.add(infoLabel);
@@ -107,10 +113,11 @@ public final class OrderInfoPaneGUI extends JDialog
     /**
      * Prepares the listeners for the arrow buttons
      */
-    private void prepareListeners(Client user)
+    private void prepareListeners(Owner user)
     {
         forwardArrowButton.addActionListener(new ForwardArrowButtonListener(this));
         backwardArrowButton.addActionListener(new BackwardArrowButtonListener(this));
+        refreshButton.addActionListener(new RefreshButtonListenerForOrderInfoPane(user,this));
     }
     
     /**
@@ -172,6 +179,28 @@ public final class OrderInfoPaneGUI extends JDialog
     }
     
     /**
+     * refresh the order list with a new given order list
+     * 
+     * @param newOrders the new ordersOnDisplay
+     */
+    public void refresh(ArrayList<OrderLine> newOrders)
+    {
+        allOrders = newOrders;
+        currentIndex = 0;
+        String orderInfoLabelFriendly = "<html>" + allOrders.get(currentIndex).toString().replaceAll("\n", "<br/>") + "</html>";
+        infoLabel.setText(orderInfoLabelFriendly);
+        backwardArrowButton.setEnabled(false);
+        if(allOrders.size() > 1)
+        {
+            forwardArrowButton.setEnabled(true);
+        }
+        else
+        {
+            forwardArrowButton.setEnabled(false);
+        }
+    }
+    
+    /**
      * Prepares the window with a proper size and with the panels put in
      */
     private void prepareWindow()
@@ -179,6 +208,7 @@ public final class OrderInfoPaneGUI extends JDialog
         setLayout(new BorderLayout());
         add("Center", centrePanel);
         add("South", southPanel);
+        add("North", northPanel);
         setSize(700,200);
         setResizable(false);
         setVisible(true);

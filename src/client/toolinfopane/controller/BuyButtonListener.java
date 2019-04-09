@@ -44,14 +44,21 @@ public final class BuyButtonListener implements ActionListener
         try
         {
             int quantityToBuy = Integer.parseInt(numberToBuyAsString);
-            boolean wasSuccessful = user.manageDecreaseQuantityRequest(parent.getToolIDOfItemOnDisplay(), quantityToBuy);
-            if(wasSuccessful)
+            if(quantityToBuy <= 0)
             {
-                JOptionPane.showMessageDialog(parent, "Successfully bought item! (Disclaimer: This is a school project, no actual items will be sent, if you want to actually send us money that is up to you)");
+                JOptionPane.showMessageDialog(parent, "Please enter an integer larger than zero.");
             }
             else
             {
-                JOptionPane.showMessageDialog(parent, "Failed to buy the item. Try again later...");
+                boolean wasSuccessful = user.manageDecreaseQuantityRequest(parent.getToolIDOfItemOnDisplay(), quantityToBuy);
+                if(wasSuccessful)
+                {
+                    JOptionPane.showMessageDialog(parent, "Successfully bought item! (Disclaimer: This is a school project, no actual items will be sent, if you want to actually send us money that is up to you)");
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(parent, "Failed to buy the item. Try again later...");
+                }
             }
         }
         catch(NumberFormatException nfe)

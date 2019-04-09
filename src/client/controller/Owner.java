@@ -18,12 +18,14 @@ import common.model.OrderLine;
  * @since April 4th 2019
  *
  */
-final class Owner extends Client
+public final class Owner extends Client
 {
     /**
      * creates an Owner with a given OwnerGUI
      * 
      * @param frame the OwnerGUI that this owner will use
+     * @param cManager the CommunicationManager that will handle communication between the owner and the server
+     * @param pControl the permission controller assigned to this owner
      */
     public Owner(OwnerGUI frame, CommunicationManager cManager, PermissionController pControl)
     {
@@ -36,23 +38,39 @@ final class Owner extends Client
      */
     public void manageGetAllOrdersRequest()
     {
+        ArrayList<OrderLine> orderList = getUpdatedOrders();
+        if(orderList != null)
+        {
+            OrderInfoPaneGUI infoPane = new OrderInfoPaneGUI(this, orderList);
+        }
+    }
+    
+    /**
+     * returns an updated list of orders from the server
+     * 
+     * @return an ArrayList of OrderLines containing the most recent orders
+     */
+    public ArrayList<OrderLine> getUpdatedOrders()
+    {
         try
         {
             super.getComsManager().sendMessage("GETORDERS");
-            ArrayList<OrderLine> allOrders = super.getComsManager().readOrderLines();
-            OrderInfoPaneGUI infoPane = new OrderInfoPaneGUI(this, allOrders);
+            return super.getComsManager().readOrderLines();
         }
         catch(NullPointerException npe)
         {
             JOptionPane.showMessageDialog(super.getFrame(), "Please connect to the server before trying to get orders...");
+            return null;
         }
         catch(IOException ioe)
         {
-            JOptionPane.showMessageDialog(super.getFrame(), "An IOException occurred while trying to get orders!");
+            JOptionPane.showMessageDialog(super.getFrame(), "Please connect to the server before trying to get orders...");
+            return null;
         }
         catch(Exception e)
         {
             JOptionPane.showMessageDialog(super.getFrame(), "An unexpected error occurred while trying to get all orders!");
+            return null;
         }
     }
     
@@ -84,7 +102,7 @@ final class Owner extends Client
         }
         catch(IOException ioe)
         {
-            JOptionPane.showMessageDialog(super.getFrame(), "An IOException occurred while managing a request to get a tool!");
+            JOptionPane.showMessageDialog(super.getFrame(), "An error occurred while trying to get all items, please doublecheck that you are connected to the server!");
             ioe.printStackTrace();
             return null;
         }

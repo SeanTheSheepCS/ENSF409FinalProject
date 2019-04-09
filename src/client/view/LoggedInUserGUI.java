@@ -32,7 +32,7 @@ public class LoggedInUserGUI extends GUI
     {
         super(title);
         this.username = username;
-        super.removeLoginCapabilities();
+        super.clearNorthOptionsPane();
         addLogoutCapabilities();
     }
     
@@ -50,6 +50,7 @@ public class LoggedInUserGUI extends GUI
         super.getNorthOptionsPanel().add(logoutButton);
         super.getNorthOptionsPanel().add(getSearchField());
         super.getNorthOptionsPanel().add(getSearchButton());
+        super.getNorthOptionsPanel().add(getRefreshButton());
     }
     
     /**

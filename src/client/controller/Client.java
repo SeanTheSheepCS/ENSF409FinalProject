@@ -93,6 +93,8 @@ public class Client
             theFrame.getConnectButton().addActionListener(new ConnectButtonListener(this));
             theFrame.getDisconnectButton().addActionListener(new DisconnectButtonListener(this));
             theFrame.getList().addListSelectionListener(new ListListener(this, theFrame.getList()));
+            theFrame.getLoginButton().addActionListener(new LoginButtonListener(this));
+            theFrame.getRefreshButton().addActionListener(new RefreshButtonListener(this));
         }
         catch(NullPointerException npe)
         {
@@ -184,10 +186,6 @@ public class Client
     {
         try
         {
-            if(comsManager.isConnected() == false)
-            {
-                throw new NullPointerException("Please connect to server before trying to logout...");
-            }
             pControl.changePermissionToGuest();
         }
         catch(NullPointerException npe)
@@ -241,7 +239,7 @@ public class Client
         }
         catch(NullPointerException npe)
         {
-            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to get all tools...");
+            JOptionPane.showMessageDialog(theFrame, "Please connect to the server before trying to decrease a tool's quantity...");
             return false;
         }
         catch(IOException ioe)

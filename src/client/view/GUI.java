@@ -41,10 +41,11 @@ public class GUI extends JFrame
     private JButton loginButton;
     private JButton connectButton;
     private JButton disconnectButton;
+    private JButton refreshButton;
     
-    protected JTextField usernameField;
-    protected JPasswordField passwordField;
-    protected JTextField searchField;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JTextField searchField;
     
     private JPanel northOptionsPanel;
     
@@ -96,10 +97,18 @@ public class GUI extends JFrame
      */
     public void setCursorToScrewdriver()
     {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
-        Image cursorImage = Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/screwdriverTransparentBackground.png")); 
-        Cursor screwdriverCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point(this.getX(),this.getY()), "screwdriverCursor");
-        setCursor(screwdriverCursor);
+        try
+        {
+            setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/toolbox.png"))); 
+            Image cursorImage = Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("res/screwdriverTransparentBackground.png")); 
+            Cursor screwdriverCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, new Point(this.getX(),this.getY()), "screwdriverCursor");
+            setCursor(screwdriverCursor);
+        }
+        catch(IndexOutOfBoundsException aioobe)
+        {
+            //This occurs when clients are started out of order. If this is the case, don't try to use the screwdriver cursor
+            setCursor(Cursor.DEFAULT_CURSOR);
+        }
     }
     
     /**
@@ -126,6 +135,7 @@ public class GUI extends JFrame
         searchButton = new JButton("Search");
         loginButton = new JButton("Login");
         connectButton = new JButton("Connect");
+        refreshButton = new JButton("🗘");
         connectButton.setHorizontalAlignment(SwingConstants.CENTER);
         connectButton.setEnabled(true);
         disconnectButton = new JButton("Disconnect");
@@ -158,6 +168,7 @@ public class GUI extends JFrame
         northOptionsPanel.add(loginButton);
         northOptionsPanel.add(searchField);
         northOptionsPanel.add(searchButton);
+        northOptionsPanel.add(refreshButton);
         
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         northPanel.add(header);
@@ -194,6 +205,7 @@ public class GUI extends JFrame
         {
             disconnectButton.setEnabled(true);
             connectButton.setEnabled(false);
+            refreshButton.setEnabled(true);
         }
         catch(Exception e)
         {
@@ -210,6 +222,7 @@ public class GUI extends JFrame
         {
             connectButton.setEnabled(true);
             disconnectButton.setEnabled(false);
+            refreshButton.setEnabled(false);
             stringDataOnDisplay.addElement("Please connect to an IP Address.");
         }
         catch(Exception e)
@@ -237,15 +250,16 @@ public class GUI extends JFrame
     }
     
     /**
-     * removes login capabilities from the frame, useful for super-classes that may not want these buttons to be visible
+     * removes all elements at the top of the GUI, useful for super-classes that may not want some of these features
      */
-    protected void removeLoginCapabilities()
+    protected void clearNorthOptionsPane()
     {
         northOptionsPanel.remove(usernameField);
         northOptionsPanel.remove(passwordField);
         northOptionsPanel.remove(loginButton);
         northOptionsPanel.remove(searchField);
         northOptionsPanel.remove(searchButton);
+        northOptionsPanel.remove(refreshButton);
     }
     
     protected JTextField getSearchField()
@@ -301,6 +315,11 @@ public class GUI extends JFrame
     public JPanel getSouthPanel()
     {
         return southPanel;
+    }
+    
+    public JButton getRefreshButton()
+    {
+        return refreshButton;
     }
     
     public boolean hasBuyingPriviledges()
