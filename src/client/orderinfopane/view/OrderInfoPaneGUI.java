@@ -43,7 +43,6 @@ public final class OrderInfoPaneGUI extends JDialog
      * Generates a toolInfoPane with the given elements
      * 
      * @param user the user that we can communicate with
-     * @param parent the parent of this JDialog
      * @param allOrders the order lines that can be displayed by this pane
      */
     public OrderInfoPaneGUI(Client user, ArrayList<OrderLine> allOrders)

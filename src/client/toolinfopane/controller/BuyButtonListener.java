@@ -25,6 +25,7 @@ public final class BuyButtonListener implements ActionListener
     /**
      * Generates a BuyButtonListener with a given parent
      * 
+     * @param user the user that will buy the tool if the button is pressed
      * @param parent the ToolPaneInfoGUI whose buy button this is monitoring
      */
     public BuyButtonListener(Client user, ToolInfoPaneGUI parent)

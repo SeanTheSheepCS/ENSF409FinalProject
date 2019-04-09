@@ -41,7 +41,7 @@ public final class ToolInfoPaneGUI extends JDialog
      * @param user the user that we can communicate with
      * @param parent the parent of this JDialog
      * @param toolInfo the info of the tool that should be displayed
-     * @param toolID the ID of the tool that should be displayed
+     * @param toolIDOfItemOnDisplay the ID of the tool that should be displayed
      */
     public ToolInfoPaneGUI(Client user, GUI parent, String toolInfo, int toolIDOfItemOnDisplay)
     {
@@ -109,6 +109,8 @@ public final class ToolInfoPaneGUI extends JDialog
     
     /**
      * returns the ID of the item on display in this ToolInfoPaneGUI
+     * 
+     * @return the ID of the item on display in this ToolInfoPaneGUI
      */
     public int getToolIDOfItemOnDisplay()
     {

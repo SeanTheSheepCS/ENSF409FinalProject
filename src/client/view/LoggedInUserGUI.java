@@ -54,6 +54,8 @@ public class LoggedInUserGUI extends GUI
     
     /**
      * returns the logout button for this user
+     * 
+     * @return the logout button for this user
      */
     public JButton getLogoutButton()
     {

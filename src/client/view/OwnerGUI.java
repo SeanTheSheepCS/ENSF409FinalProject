@@ -39,6 +39,8 @@ public final class OwnerGUI extends LoggedInUserGUI
     
     /**
      * returns the getAllOrdersButton
+     * 
+     * @return the getAllOrdersButton
      */
     public JButton getTheGetAllOrdersButton()
     {

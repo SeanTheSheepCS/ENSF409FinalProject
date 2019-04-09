@@ -25,6 +25,7 @@ public final class DecreaseQuantityButtonListener implements ActionListener
     /**
      * Generates a DecreaseQuantityButtonListener with a given parent
      * 
+     * @param user the user who will send the message to decrease quantity to the server
      * @param parent the ToolPaneInfoGUI whose decrease quantity button this is monitoring
      */
     public DecreaseQuantityButtonListener(Client user, ToolInfoPaneGUI parent)

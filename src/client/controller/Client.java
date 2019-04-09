@@ -258,6 +258,7 @@ public class Client
      * requests info for an item with a specific ID
      * 
      * @param specifiedID the ID of the tool we want info of
+     * @return the info for the item with the specified ID
      */
     public String requestItemInfo(int specifiedID)
     {
@@ -369,7 +370,7 @@ public class Client
      * 
      * @param serverName the IP to connect to
      * @param portNumber the portnumber (should always be 9898)
-     * @throws IOException
+     * @throws IOException if creating the connection was unsuccessful
      */
     public void setUpConnection(String serverName, int portNumber) throws IOException
     {

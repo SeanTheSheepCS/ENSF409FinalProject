@@ -228,6 +228,8 @@ public class GUI extends JFrame
     
     /**
      * adds a listing to the scroll pane at the centre of the screen
+     * 
+     * @param itemAsString a String representation of the item to be added to the scroll pane
      */
     public void addListingToDisplay(String itemAsString)
     {
