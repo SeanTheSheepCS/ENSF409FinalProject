@@ -5,7 +5,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import server.model.DatabaseConnector;
-
+/**
+ * LoginInfoTest is a testing class for DatabaseConnector
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 8th 2019
+ */
 public class LoginInfoTest {
 
 	@Test

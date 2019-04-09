@@ -10,13 +10,14 @@ import common.model.Item;
 import common.model.OrderLine;
 import server.model.DatabaseConnector;
 
-
 /*
  * BUGS/FEATURES to fix/finish:
  * DONE Check if sending an Array of Items through socket is possible. that way it'll be faster. 
  * DONE Search function - search multiple words -> 2^n complexity. 
  * DONE Split interpretMessageFromClient() into multiple functions, that way it'll be much nicer and cleaner. 
  * DONE see all orders
+ * Updates to client
+ * 
  */
 /**
  * CommunicationsManager manages communications through a socket, it sends
@@ -165,7 +166,7 @@ public class CommunicationsManager implements Runnable {
 				}
 				String itemId = itemInfo[1];
 				String quantity = itemInfo[2];
-				databaseControl.decreaseItemQuantity(itemId, quantity);
+				databaseControl.getItemForDecrease(itemId, quantity);
 				break;
 			case "GETORDERS":
 				getAllOrders();
@@ -180,16 +181,27 @@ public class CommunicationsManager implements Runnable {
 			System.err.println("Connection with client was terminated in controllerRun");
 			isStopped = true;
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			System.err.println("Class not found in Communications mangaer");
+			isStopped = true;
+		} catch (Exception e1) {
+			System.err.println("Fatal exception in Communications mangaer");
+			isStopped = true;
 		}
 	}
 
+	/**
+	 * gets the orders and sends them.
+	 */
 	private void getAllOrders() {
 		ArrayList<OrderLine> allOrders = databaseControl.getOrdersFromDatabase();
 		sendOrderLines(allOrders);
 	}
 
+	/**
+	 * sends orders through socket.
+	 * 
+	 * @param allOrders is arraylist of orders to be sent.
+	 */
 	private void sendOrderLines(ArrayList<OrderLine> allOrders) {
 		try {
 			objectToSocket.writeObject(allOrders);
@@ -201,6 +213,13 @@ public class CommunicationsManager implements Runnable {
 		}
 	}
 
+	/**
+	 * Calls to check validity of credentials then sends appropriate message about
+	 * credentials.
+	 * 
+	 * @param username to check
+	 * @param password to check
+	 */
 	private void checkAndSendForCredentials(String username, String password) {
 		if (databaseControl.isValidLogin(username, password)) {
 			if (databaseControl.isAdmin(username, password)) {
@@ -214,13 +233,18 @@ public class CommunicationsManager implements Runnable {
 
 	}
 
+	/**
+	 * asks for search in database, then sends items to scket..
+	 * 
+	 * @param queries is search terms.
+	 */
 	private void searchAndSend(ArrayList<String> queries) {
 		ArrayList<Item> itemList = databaseControl.search(queries);
 		sendItems(itemList);
 	}
 
 	/**
-	 * getAllItems gets every item in database and sends 1 at a time to client.
+	 * getAllItems gets every item in database sends to socket. .
 	 */
 	private void getAllItems() {
 		ArrayList<Item> allItems = databaseControl.getAllItems();
@@ -279,6 +303,11 @@ public class CommunicationsManager implements Runnable {
 		}
 	}
 
+	/**
+	 * sends arraylist of items to socket.
+	 * 
+	 * @param items is arraylist to send
+	 */
 	private void sendItems(ArrayList<Item> items) {
 		try {
 			objectToSocket.writeObject(items);

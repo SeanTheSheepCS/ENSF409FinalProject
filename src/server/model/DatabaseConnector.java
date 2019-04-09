@@ -18,14 +18,15 @@ import common.model.OrderLine;
  * BUGS/FEATURES to fix/finish:
  * ErrorChecking -> more
  * Close Streams properly
- * decreaseItemQuantity needs to reduce item quantity in SQL
- * createNewOrderline needs completion
- * change getInfo,getAllItems to be 1 line to initialize item instead of 6.
- * get orders from database.  
- * 
+ * DONE decreaseItemQuantity needs to reduce item quantity in SQL
+ * DONE createNewOrderline needs completion
+ * DONE change getInfo,getAllItems to be 1 line to initialize item instead of 6.
+ * DONE get orders from database.  
+ * Open/Closed Principle
+ * Synchronized methods
  */
 /**
- * DatabaseController connects to a database and asks/receives information from
+ * DatabaseConnector connects to a database and asks/receives information from
  * that database.
  * 
  * @author: Jean-David Rousseau, Sean Kenny
@@ -36,8 +37,7 @@ public class DatabaseConnector implements JDBCredentials {
 	private Connection connectionToDatabase;
 
 	/**
-	 * c-tor declares a shop (to be used in buy/decrease quantity functionality).
-	 * initializes connection to SQL database.
+	 * c-tor initializes connection to SQL database.
 	 */
 	public DatabaseConnector() {
 
@@ -51,10 +51,12 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			String url = "jdbc:mysql://" + HOSTNAME + ":" + PORT + "/" + DATABASE;
 			connectionToDatabase = DriverManager.getConnection(url, USERNAME, PASSWORD);
-
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
+			connectionToDatabase = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			connectionToDatabase = null;
 		}
 	}
 
@@ -76,25 +78,35 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			String query = "SELECT * FROM users WHERE username =(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setString(1, username);
-			ResultSet rs = pStat.executeQuery();
-			if (rs.next()) {
-				String passwordReceived = rs.getString("password");
-				PasswordDecoder decode = new CaesarCypher();
-				Boolean isValid = decode.decodePassword(password, passwordReceived);
+			try {
+				pStat.setString(1, username);
 
-				if (isValid) {
-					pStat.close();
-					return true;
+				ResultSet rs = pStat.executeQuery();
+				if (rs.next()) {
+					String passwordReceived = rs.getString("password");
+					PasswordDecoder decode = new CaesarCypher();
+					Boolean isValid = decode.decodePassword(password, passwordReceived);
+
+					if (isValid) {
+						pStat.close();
+						return true;
+					}
 				}
+				return false;
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
-			return false;
-		} catch (SQLException e) {
 
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return false;
 
 	}
 
@@ -111,31 +123,39 @@ public class DatabaseConnector implements JDBCredentials {
 			if (isValidLogin(username, password)) {
 				String query = "SELECT * FROM users WHERE username =(?)";
 				PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-				pStat.setString(1, username);
-				ResultSet rs = pStat.executeQuery();
-				if (rs.next()) {
-					int admin = rs.getInt("isAdmin");
-					pStat.close();
-					if (admin == 0) {
-						return false;
-					} else {
-						return true;
+				try {
+					pStat.setString(1, username);
+
+					ResultSet rs = pStat.executeQuery();
+					if (rs.next()) {
+						int admin = rs.getInt("isAdmin");
+						pStat.close();
+						if (admin == 0) {
+							return false;
+						} else {
+							return true;
+						}
 					}
+					return false;
+				} finally {
+					pStat.close();
 				}
-				pStat.close();
-				return false;
+
 			}
 			return false;
 
 		} catch (SQLException e) {
-
 			e.printStackTrace();
+			return false;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return false;
 
 	}
-
-	
 
 	/**
 	 * search finds every item in which the itemname contains the search string
@@ -166,49 +186,54 @@ public class DatabaseConnector implements JDBCredentials {
 			}
 
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+			try {
+				for (int i = 0; i < queries.size(); i++) {
+					pStat.setString(2 * (i + 1) - 1, "%" + queries.get(i) + "%");// odd entries (itemName)
+					pStat.setString(2 * (i + 1), "%" + queries.get(i) + "%");// even entries (itemID)
+				}
 
-			for (int i = 0; i < queries.size(); i++) {
-				pStat.setString(2 * (i + 1) - 1, "%" + queries.get(i) + "%");// odd entries (itemName)
-				pStat.setString(2 * (i + 1), "%" + queries.get(i) + "%");// even entries (itemID)
-			}
-
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				int id = rs.getInt("itemID");
-				if (itemList.size() == 0) {
-					Item newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
-							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-					getSupplierForItem(newItem);
-					itemList.add(newItem);
-				} else {
-					for (int i = 0; i < itemList.size(); i++) {
-						int idToCheck = itemList.get(i).getToolIDNumber();
-						// If it exists in the list already don't add
-						if (id == idToCheck) {
-							break;
-						}
-						// if it doesn't exist in list, add to list
-						else if (id > idToCheck && i >= itemList.size() - 1) {
-							Item newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
-									rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-							getSupplierForItem(newItem);
-							itemList.add(newItem);
-							break;
+				ResultSet rs = pStat.executeQuery();
+				while (rs.next()) {
+					int id = rs.getInt("itemID");
+					if (itemList.size() == 0) {
+						Item newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
+								rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+						getSupplierForItem(newItem);
+						itemList.add(newItem);
+					} else {
+						for (int i = 0; i < itemList.size(); i++) {
+							int idToCheck = itemList.get(i).getToolIDNumber();
+							// If it exists in the list already don't add
+							if (id == idToCheck) {
+								break;
+							}
+							// if it doesn't exist in list, add to list
+							else if (id > idToCheck && i >= itemList.size() - 1) {
+								Item newItem = new Item(id, rs.getString("itemName"), rs.getInt("itemQuantity"),
+										rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+								getSupplierForItem(newItem);
+								itemList.add(newItem);
+								break;
+							}
 						}
 					}
 				}
+
+				if (itemList.isEmpty()) {
+					return null;
+				}
+				return itemList;
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
-			if (itemList.isEmpty()) {
-				return null;
-			}
-			return itemList;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		} catch(NullPointerException e) {
-			//System.out.println("Returning Null");
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 
@@ -224,28 +249,33 @@ public class DatabaseConnector implements JDBCredentials {
 			}
 
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+			try {
+				for (int i = 0; i < queries.size(); i++) {
+					pStat.setString(i + 1, "%" + queries.get(i) + "%");
 
-			for (int i = 0; i < queries.size(); i++) {
-				pStat.setString(i + 1, "%" + queries.get(i) + "%");
+				}
 
+				ArrayList<Item> itemList = new ArrayList<Item>();
+				ResultSet rs = pStat.executeQuery();
+				while (rs.next()) {
+					Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+					getSupplierForItem(newItem);
+					itemList.add(newItem);
+				}
+
+				return itemList;
+			} finally {
+				pStat.close();
 			}
-
-			ArrayList<Item> itemList = new ArrayList<Item>();
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
-						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-				getSupplierForItem(newItem);
-				itemList.add(newItem);
-			}
-			pStat.close();
-			return itemList;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		}catch(NullPointerException e) {
-			//System.out.println("Returning Null");
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -260,18 +290,28 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			String query = "SELECT * FROM item WHERE itemID=(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setInt(1, Integer.parseInt(id));
-			ResultSet rs = pStat.executeQuery();
-			if (rs.next()) {
-				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
-						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-				getSupplierForItem(newItem);
-				pStat.close();
-				return newItem;
-			}
-			return null;
+			try {
+				pStat.setInt(1, Integer.parseInt(id));
 
+				ResultSet rs = pStat.executeQuery();
+				if (rs.next()) {
+					Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+					getSupplierForItem(newItem);
+
+					return newItem;
+				}
+				return null;
+			} finally {
+				pStat.close();
+			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -287,93 +327,128 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			String query = "SELECT * FROM item";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			ArrayList<Item> itemList = new ArrayList<Item>();
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
-						rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-				getSupplierForItem(newItem);
-				itemList.add(newItem);
+			try {
+				ArrayList<Item> itemList = new ArrayList<Item>();
+
+				ResultSet rs = pStat.executeQuery();
+				while (rs.next()) {
+					Item newItem = new Item(rs.getInt("itemID"), rs.getString("itemName"), rs.getInt("itemQuantity"),
+							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+					getSupplierForItem(newItem);
+					itemList.add(newItem);
+				}
+
+				return itemList;
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
-			return itemList;
 		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
+
 	/**
-	 * in dev
+	 * gets the item from database, and then calls functions to create an order and
+	 * update database as need be.
 	 * 
 	 * @param itemId
 	 * @param quantity
 	 */
-	public void decreaseItemQuantity(String itemId, String quantity) {
+	public void getItemForDecrease(String itemId, String quantity) {
 		try {
 			String query = "SELECT * FROM item WHERE itemID=(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setInt(1, Integer.parseInt(itemId));
-			ResultSet rs = pStat.executeQuery();
-			if (rs.next()) {
-				int currentQuantity = rs.getInt("itemQuantity");
-				if (new OrderLine(Integer.parseInt(itemId), Integer.parseInt(quantity), currentQuantity).needsOrder()) {
-					Item item = new Item(Integer.parseInt(itemId), rs.getString("itemName"), rs.getInt("itemQuantity"),
-							rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
-					getSupplierForItem(item);
-					OrderLine orderline = new OrderLine(item, 50 - (currentQuantity - Integer.parseInt(quantity)));
-					updateDatabaseQuantity(itemId, 50);
-					createNewOrderLineInDatabase(orderline);
-				} else {
-					updateDatabaseQuantity(itemId, currentQuantity - Integer.parseInt(quantity));
+			try {
+				pStat.setInt(1, Integer.parseInt(itemId));
+				ResultSet rs = pStat.executeQuery();
+				if (rs.next()) {
+					int currentQuantity = rs.getInt("itemQuantity");
+					if (new OrderLine(Integer.parseInt(itemId), Integer.parseInt(quantity), currentQuantity)
+							.needsOrder()) {
+						Item item = new Item(Integer.parseInt(itemId), rs.getString("itemName"),
+								rs.getInt("itemQuantity"), rs.getDouble("itemPrice"), rs.getInt("itemSupplierID"));
+						getSupplierForItem(item);
+						OrderLine orderline = new OrderLine(item, 50 - (currentQuantity - Integer.parseInt(quantity)));
+						updateDatabaseQuantity(itemId, 50);
+						createNewOrderLineInDatabase(orderline);
+					} else {
+						updateDatabaseQuantity(itemId, currentQuantity - Integer.parseInt(quantity));
+					}
+
 				}
-
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-
-		}
-
-	}
-
-	private void updateDatabaseQuantity(String itemId, int newQuantity) {
-		try {
-			String statement = "UPDATE item SET itemQuantity = (?) WHERE itemID = (?)";
-			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
-			pStat.setInt(1, newQuantity);
-			pStat.setInt(2, Integer.parseInt(itemId));
-			pStat.executeUpdate();
-			pStat.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * in dev
+	 * updates database to set quantity.
 	 * 
-	 * @param orderline
+	 * @param itemId      for item to be changed.
+	 * @param newQuantity for item.
+	 */
+	private void updateDatabaseQuantity(String itemId, int newQuantity) {
+		try {
+			String statement = "UPDATE item SET itemQuantity = (?) WHERE itemID = (?)";
+			PreparedStatement pStat = connectionToDatabase.prepareStatement(statement);
+			try {
+				pStat.setInt(1, newQuantity);
+				pStat.setInt(2, Integer.parseInt(itemId));
+				pStat.executeUpdate();
+			} finally {
+				pStat.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * adds an orderline to the database.
+	 * 
+	 * @param orderline to be added.
 	 */
 	private synchronized void createNewOrderLineInDatabase(OrderLine orderline) {
 		try {
 			String query = "INSERT INTO orderline (orderlineDate, orderlineItemDescription, orderlineQuantity, orderlineSupplier) values (?,?,?,?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
+			try {
+				pStat.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
 
-			pStat.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
-
-			pStat.setString(2, orderline.getItem().getToolName());
-			pStat.setInt(3, orderline.getQuantity());
-			pStat.setString(4, orderline.getItem().getSupplier().getCompanyName());
-			pStat.executeUpdate();
-			pStat.close();
+				pStat.setString(2, orderline.getItem().getToolName());
+				pStat.setInt(3, orderline.getQuantity());
+				pStat.setString(4, orderline.getItem().getSupplier().getCompanyName());
+				pStat.executeUpdate();
+			} finally {
+				pStat.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * sets supplier for item provided.
 	 * 
@@ -384,41 +459,58 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			String query = "SELECT * FROM supplier WHERE supplierID =(?)";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			pStat.setInt(1, item.getSupplier().getSupplierID());
-			ResultSet rs = pStat.executeQuery();
-			if (rs.next()) {
-				item.getSupplier().setAddress(rs.getString("supplierAddress"));
-				item.getSupplier().setCompanyName(rs.getString("supplierName"));
-				item.getSupplier().setSalesContact(rs.getString("supplierSalesContact"));
+			try {
+				pStat.setInt(1, item.getSupplier().getSupplierID());
+				ResultSet rs = pStat.executeQuery();
+				if (rs.next()) {
+					item.getSupplier().setAddress(rs.getString("supplierAddress"));
+					item.getSupplier().setCompanyName(rs.getString("supplierName"));
+					item.getSupplier().setSalesContact(rs.getString("supplierSalesContact"));
+				}
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
-	 * in dev
+	 * retrieves all orders from database.
+	 * 
+	 * @return ArrayList<OrderLine> which is all orders in database.
 	 */
 	public ArrayList<OrderLine> getOrdersFromDatabase() {
 		try {
 			String query = "SELECT * FROM orderline";
 			PreparedStatement pStat = connectionToDatabase.prepareStatement(query);
-			ArrayList<OrderLine> orderList = new ArrayList<OrderLine>();
-			ResultSet rs = pStat.executeQuery();
-			while (rs.next()) {
-				OrderLine orderline = new OrderLine(rs.getDate("orderlineDate"), rs.getString("orderlineSupplier"),
-						rs.getInt("orderlineQuantity"), rs.getString("orderlineItemDescription"));
-				orderList.add(orderline);
+			try {
+				ArrayList<OrderLine> orderList = new ArrayList<OrderLine>();
+				ResultSet rs = pStat.executeQuery();
+				while (rs.next()) {
+					OrderLine orderline = new OrderLine(rs.getDate("orderlineDate"), rs.getString("orderlineSupplier"),
+							rs.getInt("orderlineQuantity"), rs.getString("orderlineItemDescription"));
+					orderList.add(orderline);
+				}
+
+				if (orderList.isEmpty()) {
+					return null;
+				}
+				return orderList;
+			} finally {
+				pStat.close();
 			}
-			pStat.close();
-			if (orderList.isEmpty()) {
-				return null;
-			}
-			return orderList;
 		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -431,7 +523,6 @@ public class DatabaseConnector implements JDBCredentials {
 		try {
 			connectionToDatabase.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -608,19 +699,4 @@ public class DatabaseConnector implements JDBCredentials {
 			closeConnection();
 		}
 	}
-
-	/*
-	 * Testing
-	 *
-	public static void main(String[] args) {
-		DatabaseController databaseController = new DatabaseController();
-		databaseController.initializeConnection();
-		ArrayList<String> queries = new ArrayList<String>();
-		queries.add("00");
-		queries.add("its");
-		ArrayList<Item> e = databaseController.search(queries);
-		for (Item f : e) {
-			System.out.println(f.toString());
-		}
-	}*/
 }

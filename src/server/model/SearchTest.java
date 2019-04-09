@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import common.model.Item;
-
+/**
+ * SearchTest is a testing class for DatabaseConnector
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 8th 2019
+ */
 public class SearchTest {
 
 	@Test
