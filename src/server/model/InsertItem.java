@@ -6,7 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+/**
+ * class that extends Database Connector to provide inserting an item in database functionality. 
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class InsertItem extends DatabaseConnector {
 
 	public InsertItem() {

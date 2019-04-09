@@ -6,7 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import common.model.Item;
-
+/**
+ * class that extends Database Connector to provide getting all items in database functionality. 
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class GetAllItemsInDatabase extends DatabaseConnector {
 
 	public GetAllItemsInDatabase() {

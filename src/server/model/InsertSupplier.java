@@ -6,7 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+/**
+ * class that extends Database Connector to provide inserting a supplier in database functionality. 
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class InsertSupplier extends DatabaseConnector {
 
 	public InsertSupplier() {

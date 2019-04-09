@@ -3,7 +3,13 @@ package server.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+/**
+ * class that extends Database Connector to login/credential checking in database functionality. 
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class LoginValidator extends DatabaseConnector{
 	public LoginValidator() {
 		super();

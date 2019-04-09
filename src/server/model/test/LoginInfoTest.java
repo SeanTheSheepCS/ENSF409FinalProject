@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import server.model.DatabaseConnector;
+import server.model.LoginValidator;
 /**
- * LoginInfoTest is a testing class for DatabaseConnector
+ * LoginInfoTest is a testing class for LoginValidator
  * 
  * @author: Jean-David Rousseau, Sean Kenny
  * @version 1.0
@@ -16,7 +16,7 @@ public class LoginInfoTest {
 
 	@Test
 	public void test() {
-		DatabaseConnector dbc = new DatabaseConnector();
+		LoginValidator dbc = new LoginValidator();
 		dbc.initializeConnection();
 		try {
 			String username = "admin";

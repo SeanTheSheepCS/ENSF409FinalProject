@@ -6,6 +6,14 @@ import java.sql.SQLException;
 
 import common.model.Item;
 
+/**
+ * class that extends Database Connector to provide getting an item based on id
+ * in database functionality.
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class FindItemInDatabase extends DatabaseConnector {
 
 	public FindItemInDatabase() {

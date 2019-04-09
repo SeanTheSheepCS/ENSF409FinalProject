@@ -7,6 +7,15 @@ import java.sql.SQLException;
 import common.model.Item;
 import common.model.OrderLine;
 
+/**
+ * class that extends Database Connector to provide decreasing quantity of an
+ * item in database functionality, as well as checking if there's a need to
+ * create a new order.
+ * 
+ * @author: Jean-David Rousseau, Sean Kenny
+ * @version 1.0
+ * @since April 4th 2019
+ */
 public class DecreaseItemQuantityInDatabase extends DatabaseConnector {
 
 	public DecreaseItemQuantityInDatabase() {

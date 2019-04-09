@@ -1,13 +1,15 @@
 package server.model.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
 import common.model.Item;
-import server.model.DatabaseConnector;
+import server.model.SearchDatabase;
+
 /**
  * SearchTest is a testing class for DatabaseConnector
  * 
@@ -20,7 +22,7 @@ public class SearchTest {
 	@Test
 	public void test() {
 
-		DatabaseConnector dbc = new DatabaseConnector();
+		SearchDatabase dbc = new SearchDatabase();
 		dbc.initializeConnection();
 		try {
 			ArrayList<String> queries = new ArrayList<String>();
@@ -40,16 +42,16 @@ public class SearchTest {
 
 			queries = null;
 			list2 = dbc.search(queries);
-			assertEquals(list2,null);
+			assertEquals(list2, null);
 
 			list1 = dbc.search(queries);
-			assertEquals(list2,list1);
+			assertEquals(list2, list1);
 			dbc.closeConnection();
 
 		} catch (Exception e) {
 			dbc.closeConnection();
 			e.printStackTrace();
-			assertEquals(1,2);
+			assertEquals(1, 2);
 		}
 	}
 
