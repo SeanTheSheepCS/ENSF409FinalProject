@@ -54,6 +54,7 @@ public final class DecreaseQuantityButtonListener implements ActionListener
                 if(wasSuccessful)
                 {
                     JOptionPane.showMessageDialog(parent, "Successfully decreased the item's quantity!");
+                    parent.setUpdatedToolInfo(user.requestItemInfo(parent.getToolIDOfItemOnDisplay()));
                 }
                 else
                 {

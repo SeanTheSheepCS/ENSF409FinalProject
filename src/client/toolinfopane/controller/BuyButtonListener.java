@@ -54,6 +54,7 @@ public final class BuyButtonListener implements ActionListener
                 if(wasSuccessful)
                 {
                     JOptionPane.showMessageDialog(parent, "Successfully bought item! (Disclaimer: This is a school project, no actual items will be sent, if you want to actually send us money that is up to you)");
+                    parent.setUpdatedToolInfo(user.requestItemInfo(parent.getToolIDOfItemOnDisplay()));
                 }
                 else
                 {
