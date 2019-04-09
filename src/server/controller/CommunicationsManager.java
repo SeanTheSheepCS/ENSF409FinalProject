@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import common.model.Item;
 import common.model.OrderLine;
 import server.model.DatabaseConnector;
+import server.model.DecreaseItemQuantityInDatabase;
+import server.model.FindItemInDatabase;
+import server.model.GetAllItemsInDatabase;
+import server.model.GetAllOrdersFromDatabase;
+import server.model.LoginValidator;
+import server.model.SearchDatabase;
 
 /*
  * BUGS/FEATURES to fix/finish:
@@ -64,7 +70,6 @@ public class CommunicationsManager implements Runnable {
 	public CommunicationsManager(Socket socket) {
 		this.socket = socket;
 		assignStreams();
-		databaseControl = new DatabaseConnector();
 		isStopped = false;
 	}
 
@@ -77,7 +82,6 @@ public class CommunicationsManager implements Runnable {
 		while (true) {
 			if (isStopped) {
 				closeAllStreams();
-				databaseControl.closeConnection();
 				break;
 			}
 			interpretMessageFromClient();
@@ -151,9 +155,11 @@ public class CommunicationsManager implements Runnable {
 					break;
 				}
 				String id = idInfo[1];
-				Item item = databaseControl.getInfo(id);
+				databaseControl = new FindItemInDatabase();
+				Item item = ((FindItemInDatabase) databaseControl).getInfo(id);
 				sendMessageToClient("SENDINGITEM");
 				sendItem(item);
+				databaseControl.closeConnection();
 				break;
 			case "GETALLITEMS":
 				getAllItems();
@@ -166,7 +172,9 @@ public class CommunicationsManager implements Runnable {
 				}
 				String itemId = itemInfo[1];
 				String quantity = itemInfo[2];
-				databaseControl.getItemForDecrease(itemId, quantity);
+				databaseControl = new DecreaseItemQuantityInDatabase();
+				((DecreaseItemQuantityInDatabase) databaseControl).getItemForDecrease(itemId, quantity);
+				databaseControl.closeConnection();
 				break;
 			case "GETORDERS":
 				getAllOrders();
@@ -193,8 +201,10 @@ public class CommunicationsManager implements Runnable {
 	 * gets the orders and sends them.
 	 */
 	private void getAllOrders() {
-		ArrayList<OrderLine> allOrders = databaseControl.getOrdersFromDatabase();
+		databaseControl = new GetAllOrdersFromDatabase();
+		ArrayList<OrderLine> allOrders = ((GetAllOrdersFromDatabase) databaseControl).getOrdersFromDatabase();
 		sendOrderLines(allOrders);
+		databaseControl.closeConnection();
 	}
 
 	/**
@@ -221,8 +231,9 @@ public class CommunicationsManager implements Runnable {
 	 * @param password to check
 	 */
 	private void checkAndSendForCredentials(String username, String password) {
-		if (databaseControl.isValidLogin(username, password)) {
-			if (databaseControl.isAdmin(username, password)) {
+		databaseControl = new LoginValidator();
+		if (((LoginValidator) databaseControl).isValidLogin(username, password)) {
+			if (((LoginValidator) databaseControl).isAdmin(username, password)) {
 				sendMessageToClient("ADMIN");
 			} else {
 				sendMessageToClient("CUSTOMER");
@@ -230,7 +241,7 @@ public class CommunicationsManager implements Runnable {
 		} else {
 			sendMessageToClient("INVALID");
 		}
-
+		databaseControl.closeConnection();
 	}
 
 	/**
@@ -239,16 +250,20 @@ public class CommunicationsManager implements Runnable {
 	 * @param queries is search terms.
 	 */
 	private void searchAndSend(ArrayList<String> queries) {
-		ArrayList<Item> itemList = databaseControl.search(queries);
+		databaseControl = new SearchDatabase();
+		ArrayList<Item> itemList = ((SearchDatabase) databaseControl).search(queries);
 		sendItems(itemList);
+		databaseControl.closeConnection();
 	}
 
 	/**
 	 * getAllItems gets every item in database sends to socket. .
 	 */
 	private void getAllItems() {
-		ArrayList<Item> allItems = databaseControl.getAllItems();
+		databaseControl = new GetAllItemsInDatabase();
+		ArrayList<Item> allItems = ((GetAllItemsInDatabase) databaseControl).getAllItems();
 		sendItems(allItems);
+		databaseControl.closeConnection();
 	}
 
 	/**

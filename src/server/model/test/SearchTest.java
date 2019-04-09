@@ -1,4 +1,4 @@
-package server.model;
+package server.model.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import common.model.Item;
+import server.model.DatabaseConnector;
 /**
  * SearchTest is a testing class for DatabaseConnector
  * 
