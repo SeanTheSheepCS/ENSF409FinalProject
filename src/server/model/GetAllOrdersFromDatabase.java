@@ -16,7 +16,7 @@ public class GetAllOrdersFromDatabase extends DatabaseConnector {
 	/**
 	 * retrieves all orders from database.
 	 * 
-	 * @return ArrayList<OrderLine> which is all orders in database.
+	 * @return list of orderlines which is all orders in database.
 	 */
 	public ArrayList<OrderLine> getOrdersFromDatabase() {
 		try {

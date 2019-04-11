@@ -93,24 +93,24 @@ public class CommunicationsManager implements Runnable {
 	 * 
 	 * Current recognized messages:
 	 * 
-	 * *LOGIN -> checks if valid user/password combo, then sends if
+	 * *LOGIN - checks if valid user/password combo, then sends if
 	 * ADMIN,CUSTOMER,orINVALID.
 	 * 
-	 * *LOGOUT -> nothing.
+	 * *LOGOUT - nothing.
 	 * 
-	 * *SEARCH -> Searches database and sends all possible items.
+	 * *SEARCH - Searches database and sends all possible items.
 	 * 
-	 * *REQUESTITEMINFO -> gets info of 1 item in database and sends it.
+	 * *REQUESTITEMINFO - gets info of 1 item in database and sends it.
 	 * 
-	 * *GETALLITEMS -> sends all items in database.
+	 * *GETALLITEMS - sends all items in database.
 	 * 
-	 * *DECQUANTITY -> decreases quantity of 1 item in database, nothing sent.
+	 * *DECQUANTITY - decreases quantity of 1 item in database, nothing sent.
 	 * 
-	 * *GETORDERS -> sends all orders in database
+	 * *GETORDERS - sends all orders in database
 	 * 
-	 * *QUIT -> sends QUIT and stops thread.
+	 * *QUIT - sends QUIT and stops thread.
 	 * 
-	 * * ->does nothing if empty.
+	 * * -does nothing if empty.
 	 */
 	public void interpretMessageFromClient() {
 		try {

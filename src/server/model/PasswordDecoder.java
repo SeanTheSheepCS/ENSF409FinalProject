@@ -10,9 +10,10 @@ package server.model;
 public interface PasswordDecoder {
 
 	/**
-	 * function decodes password.
-	 * 
-	 * @return true if correct password
+	 * decodePassword determines if provided password is correct when compared to key. 
+	 * @param key is good password
+	 * @param toDecode is unaltered pw
+	 * @return true if correct
 	 */
 	public boolean decodePassword(String key, String toDecode);
 }
