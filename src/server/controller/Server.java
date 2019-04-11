@@ -27,8 +27,8 @@ public class Server {
 	private ExecutorService pool;
 
 	/**
-	 * c-tor, initializes pool and server socket, connects to port 9898.
-	 * Made for local clients. 
+	 * c-tor, initializes pool and server socket, connects to port 9898. Made for
+	 * local clients.
 	 */
 	public Server() {
 		try {
@@ -43,11 +43,12 @@ public class Server {
 
 	/**
 	 * c-tor, initializes pool and server socket, connects to IP address provided.
-	 * Made for local clients. made for remote clients. 
+	 * Made for local clients. made for remote clients.
 	 * 
 	 * @param port        on computer to connect to.
 	 * @param backlog     is amount of clients to keep in queue.
 	 * @param bindAddress is IP address.
+	 * @param poolsize    is size of threadpool
 	 */
 	public Server(int port, int backlog, String bindAddress, int poolSize) {
 		try {
@@ -93,8 +94,8 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		//Server server = new Server();
-		Server server = new Server(9898, 5, "10.13.159.107", 15);
+		// Server server = new Server();
+		Server server = new Server(9898, 5, "10.13.152.41", 15);
 		server.startCommunications();
 	}
 
