@@ -34,7 +34,7 @@ public class RefreshButtonListener implements ActionListener
     public void actionPerformed(ActionEvent e) 
     {
         user.clearEntries();
-        user.manageGetAllToolsRequest();
+        user.manageSearchRequest(user.getFrame().getSearchTerm());
     }
 
 }
