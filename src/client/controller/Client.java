@@ -18,7 +18,7 @@ import common.model.Item;
  */
 public class Client 
 {
-    /** An arraylist containing the IDS of the items currenty on display on theFrame */
+    /** An arraylist containing the IDS of the items currently on display on theFrame */
     private ArrayList<Integer> idsOfItemsOnDisplay;
     /** manages the communication for the client */
     protected CommunicationManager comsManager;
