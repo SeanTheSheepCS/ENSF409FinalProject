@@ -11,5 +11,5 @@ public interface JDBCredentials {
 	static final String PORT= "3306";
 	static final String DATABASE= "toolshopitem";
 	static final String USERNAME="root";
-	static final String PASSWORD="PowCow.0831";
+	static final String PASSWORD=null;
 }
